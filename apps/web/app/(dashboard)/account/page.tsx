@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/sign-out-button";
-import { TelegramLoginButton } from "@/components/telegram-login";
+import { AccountTelegramLink } from "@/components/account-telegram-link";
 import { AccountEmailVerify } from "@/components/account-email-verify";
 import { updatePhone } from "@/app/actions/profile";
 import {
@@ -114,14 +114,16 @@ export default async function AccountPage() {
                 {u.telegramId ? `Привязан (ID ${u.telegramId})` : "Не привязан"}
               </span>
             </div>
-            <TelegramLoginButton
-              onLinked={() => {
-                // Server Component can't revalidate here; rely on page refresh.
-              }}
-            />
-            {!u.telegramId && (
+            {!u.telegramId ? (
+              <>
+                <AccountTelegramLink />
+                <p className="text-xs text-[var(--color-muted-foreground)]">
+                  Нажмите кнопку выше, чтобы привязать Telegram-аккаунт.
+                </p>
+              </>
+            ) : (
               <p className="text-xs text-[var(--color-muted-foreground)]">
-                Нажмите кнопку выше, чтобы привязать Telegram-аккаунт.
+                Telegram уже привязан к аккаунту.
               </p>
             )}
           </CardContent>
