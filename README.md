@@ -1,62 +1,80 @@
-# AquaFlow — Water Delivery Platform
+# AquaFlow Pro — Платформа доставки воды
+
+Готовый к production сайт доставки питьевой воды: лендинг, каталог, оформление заказа, личный кабинет, панель администратора, аутентификация Better Auth, MCP-сервер, Docker.
+
+**AquaFlow Pro — Water Delivery Platform**
 
 Production-ready water delivery website: landing, catalog, checkout, account dashboard, admin panel, Better Auth, MCP server, Docker.
 
-## Stack
+## Стек технологий / Stack
 
 - **Frontend:** Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Framer Motion, React Three Fiber, next-themes
 - **Backend:** Next.js Server Actions, Better Auth, Drizzle ORM, PostgreSQL, Redis
-- **Design:** `ui-ux-pro-max` generated system — Flat Design, water palette, Rubik + Nunito Sans
-- **AI Integration:** MCP server (`@modelcontextprotocol/sdk`) for products, orders and analytics
-- **Infra:** Docker Compose, pnpm workspaces, Turbo
+- **Дизайн:** кибер-тёмная тема с неоновыми акцентами (cyan / pink / yellow), glassmorphism, анимированные переходы
+- **Интеграции:** Telegram Login Widget, FastAPI бот доставки воды, email-верификация
+- **Инфраструктура:** Docker Compose, pnpm workspaces, Turbo
 
-## Project Structure
+## Структура проекта / Project Structure
 
 ```
 .
 ├── apps/
-│   ├── web/              # Next.js 15 marketing + dashboard
-│   └── mcp/              # MCP server (stdio)
+│   ├── web/              # Next.js 15: маркетинг + личный кабинет
+│   └── mcp/              # MCP-сервер (stdio)
 ├── packages/
-│   └── database/         # Drizzle ORM schema + migrations
+│   └── database/         # Drizzle ORM: схема + миграции
 ├── docker-compose.yml
 └── README.md
 ```
 
-## Quick Start (local)
+## Быстрый старт / Quick Start (local)
 
 ```bash
-# 1. Install dependencies
+# 1. Установить зависимости
 pnpm install
 
-# 2. Copy environment file
+# 2. Скопировать файл окружения
 cp .env.example .env
 
-# 3. Start Postgres + Redis
+# 3. Запустить Postgres + Redis
 docker compose up -d db redis
 
-# 4. Run migrations and seed products
+# 4. Выполнить миграции и наполнить базу
 pnpm --filter @aquaflow/database migrate
 pnpm --filter @aquaflow/database seed
 
-# 5. Start web app in dev mode
+# 5. Запустить веб-приложение в режиме разработки
 pnpm --filter @aquaflow/web dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Откройте [http://localhost:3000](http://localhost:3000).
 
-## Full Docker Stack
+## Полный Docker-стек / Full Docker Stack
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-This starts web (port 3000), MCP server, Postgres and Redis.
+Запускается веб-приложение (порт 3000), MCP-сервер, Postgres и Redis.
 
-## MCP Server
+## Интеграция с Telegram-ботом / Bot Integration
 
-The MCP server exposes tools for external AI agents:
+Сайт умеет отправлять заказы в API водочного Telegram-бота и синхронизировать каталог воды.
+
+Переменные окружения в `.env`:
+
+```env
+BOT_API_URL=http://127.0.0.1:8001
+BOT_API_TOKEN=<токен из таблицы api_tokens бота>
+TELEGRAM_BOT_TOKEN=<токен от @BotFather>
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=<username бота без @>
+NEXT_PUBLIC_SHOW_TELEGRAM_LOGIN=true
+```
+
+## MCP-сервер / MCP Server
+
+MCP-сервер предоставляет инструменты для внешних AI-агентов:
 
 - `list_products`
 - `get_product`
@@ -65,13 +83,13 @@ The MCP server exposes tools for external AI agents:
 - `update_order_status`
 - `get_analytics`
 
-Run locally:
+Локальный запуск:
 
 ```bash
 pnpm --filter @aquaflow/mcp start
 ```
 
-Or connect via stdio to any MCP client:
+Подключение через stdio к любому MCP-клиенту:
 
 ```json
 {
@@ -80,31 +98,21 @@ Or connect via stdio to any MCP client:
 }
 ```
 
-## Scripts
+## Скрипты / Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start all dev servers |
-| `pnpm build` | Build web + mcp |
-| `pnpm typecheck` | Type-check all packages |
-| `pnpm --filter @aquaflow/database generate` | Generate Drizzle migrations |
-| `pnpm --filter @aquaflow/database migrate` | Run migrations |
-| `pnpm --filter @aquaflow/database seed` | Seed products |
+| Скрипт | Описание |
+|--------|----------|
+| `pnpm dev` | Запустить все dev-серверы |
+| `pnpm build` | Собрать web + mcp |
+| `pnpm typecheck` | Проверить типы во всех пакетах |
+| `pnpm --filter @aquaflow/database generate` | Сгенерировать миграции Drizzle |
+| `pnpm --filter @aquaflow/database migrate` | Применить миграции |
+| `pnpm --filter @aquaflow/database seed` | Заполнить базу товарами |
 | `pnpm --filter @aquaflow/database studio` | Drizzle Studio |
 
-## Design System
+## Примечания / Notes
 
-Generated with `ui-ux-pro-max`:
-
-- Style: Flat Design
-- Primary: `#0284C7`
-- Secondary: `#06B6D4`
-- Accent: `#0891B2`
-- Background: `#F0F9FF`
-- Fonts: Rubik (headings), Nunito Sans (body)
-
-## Notes
-
-- The order form works without auth in demo mode. When the database is unavailable it returns a graceful demo response.
-- Auth is handled by Better Auth via `/api/auth/*`. Dashboard routes redirect to `/login` when unauthenticated.
-- Add OAuth providers in `apps/web/lib/auth.ts` after setting credentials in `.env`.
+- Форма заказа работает без авторизации в демо-режиме. Если база недоступна, возвращается демо-ответ.
+- Аутентификация через Better Auth по адресу `/api/auth/*`. Защищённые маршруты перенаправляют на `/login` при отсутствии сессии.
+- OAuth-провайдеры можно добавить в `apps/web/lib/auth.ts` после заполнения credentials в `.env`.
+- Email-верификация по умолчанию логирует ссылку в консоль. Для реальной отправки подключите SMTP в `apps/web/lib/auth.ts`.
