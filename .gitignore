@@ -1,0 +1,16 @@
+.DS_Store
+node_modules
+*.log
+*.env
+!.env.example
+.next
+out
+dist
+*.tsbuildinfo
+.vercel
+.idea
+.vscode/settings.json
+postgres-data
+redis-data
+.turbo
+*.lockb
