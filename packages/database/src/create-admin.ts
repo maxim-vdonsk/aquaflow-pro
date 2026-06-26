@@ -1,4 +1,5 @@
-import { db, user } from "./db";
+import { db } from "./db";
+import { user } from "./auth-schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -24,7 +25,10 @@ async function main() {
   // 1. Регистрация через Better Auth API.
   const signUpRes = await fetch(`${baseUrl}/api/auth/sign-up/email`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Origin: baseUrl,
+    },
     body: JSON.stringify({ email, password, name }),
   });
 
@@ -35,7 +39,11 @@ async function main() {
     signUpData = {};
   }
 
-  if (!signUpRes.ok && signUpData?.code !== "EMAIL_ALREADY_EXISTS") {
+  if (
+    !signUpRes.ok &&
+    signUpData?.code !== "EMAIL_ALREADY_EXISTS" &&
+    signUpData?.code !== "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
+  ) {
     console.error("Sign up failed:", signUpRes.status, signUpData);
     process.exit(1);
   }
