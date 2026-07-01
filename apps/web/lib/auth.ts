@@ -10,6 +10,10 @@ export const auth = betterAuth({
   }),
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
+  trustedOrigins: async (request: any) => {
+    const origin = request?.headers?.get?.("origin") || "";
+    return /\.lhr\.life$/.test(origin) ? [origin] : [];
+  },
   user: {
     additionalFields: {
       phone: {
