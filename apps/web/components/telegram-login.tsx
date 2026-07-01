@@ -1,10 +1,6 @@
 "use client";
 
 import * as React from "react";
-import {
-  SHOW_TELEGRAM_LOGIN,
-  TELEGRAM_BOT_USERNAME,
-} from "@/lib/bot-config";
 
 export interface TelegramAuthUser {
   id: number;
@@ -17,12 +13,14 @@ export interface TelegramAuthUser {
 }
 
 interface TelegramLoginButtonProps {
+  botUsername: string;
   className?: string;
   onLinked?: () => void;
   onError?: (message: string) => void;
 }
 
 export function TelegramLoginButton({
+  botUsername,
   className,
   onLinked,
   onError,
@@ -33,12 +31,7 @@ export function TelegramLoginButton({
   ).current;
 
   React.useEffect(() => {
-    if (
-      !SHOW_TELEGRAM_LOGIN ||
-      !TELEGRAM_BOT_USERNAME ||
-      !containerRef.current ||
-      containerRef.current.childNodes.length > 0
-    ) {
+    if (!botUsername || !containerRef.current || containerRef.current.childNodes.length > 0) {
       return;
     }
 
@@ -66,7 +59,7 @@ export function TelegramLoginButton({
     const script = document.createElement("script");
     script.src = "https://telegram.org/js/telegram-widget.js?22";
     script.async = true;
-    script.setAttribute("data-telegram-login", TELEGRAM_BOT_USERNAME);
+    script.setAttribute("data-telegram-login", botUsername);
     script.setAttribute("data-size", "large");
     script.setAttribute("data-userpic", "false");
     script.setAttribute("data-onauth", `${callbackName}(user)`);
@@ -76,9 +69,9 @@ export function TelegramLoginButton({
     return () => {
       delete win[callbackName];
     };
-  }, [callbackName, onLinked, onError]);
+  }, [botUsername, callbackName, onLinked, onError]);
 
-  if (!SHOW_TELEGRAM_LOGIN || !TELEGRAM_BOT_USERNAME) {
+  if (!botUsername) {
     return null;
   }
 

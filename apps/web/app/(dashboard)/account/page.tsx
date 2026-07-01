@@ -29,6 +29,7 @@ const menu = [
 export default async function AccountPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   const u = session?.user;
+  const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
   if (!u) {
     return (
@@ -114,9 +115,9 @@ export default async function AccountPage() {
                 {u.telegramId ? `Привязан (ID ${u.telegramId})` : "Не привязан"}
               </span>
             </div>
-            {!u.telegramId ? (
+            {!u.telegramId && telegramBotUsername ? (
               <>
-                <AccountTelegramLink />
+                <AccountTelegramLink botUsername={telegramBotUsername} />
                 <p className="text-xs text-[var(--color-muted-foreground)]">
                   Нажмите кнопку выше, чтобы привязать Telegram-аккаунт.
                 </p>
