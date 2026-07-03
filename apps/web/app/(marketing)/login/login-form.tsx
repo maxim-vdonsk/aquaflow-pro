@@ -42,7 +42,11 @@ export function LoginForm({
         if (res.error) throw new Error(res.error.message || "Ошибка регистрации");
         if (phone.trim()) await setPhone(phone.trim());
       }
-      router.push("/account");
+      // Жёсткая навигация вместо router.push: мягкая Next.js навигация
+      // переиспользует кэшированный RSC-ответ /account от прошлого визита
+      // (когда без сессии был redirect на /login) — и пользователь возвращался
+      // на /login несмотря на успешный логин и установленную куку.
+      window.location.href = "/account";
     } catch (err: any) {
       setError(err.message || "Что-то пошло не так");
     } finally {
