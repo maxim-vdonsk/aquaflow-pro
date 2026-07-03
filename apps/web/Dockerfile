@@ -18,6 +18,11 @@ COPY . .
 RUN pnpm --filter @aquaflow/database build
 RUN pnpm --filter @aquaflow/web build
 
+# output: standalone — copy static assets next to standalone server
+RUN cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 EXPOSE 3000
 
-CMD ["pnpm", "--filter", "@aquaflow/web", "start"]
+CMD ["node", "apps/web/.next/standalone/apps/web/server.js"]
