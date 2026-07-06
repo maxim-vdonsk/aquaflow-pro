@@ -70,33 +70,11 @@ export async function createOrder(formData: FormData) {
 
   const total = product.price * quantity;
 
-  // Forward water orders to the Telegram bot API if configured.
-  if (hasBotApiCredentials() && product.category === "water") {
-    const botWater = await fetchBotWater();
-    const waterType = findWaterTypeForProduct(productId, botWater);
-    if (waterType) {
-      const botOrder: BotOrderInput = {
-        telegram_id: telegramId,
-        data_delivery: scheduledAt,
-        client_name: name,
-        client_address: address,
-        number: phone,
-        water_type: waterType,
-        bottles: quantity,
-        apartment: apartment || undefined,
-        floor: floor || undefined,
-        district: undefined,
-      };
-      const botResult = await submitOrderToBot(botOrder);
-      if (!botResult.ok) {
-        return {
-          success: false,
-          message: `Бот не принял заказ: ${botResult.error}`,
-        };
-      }
-    }
-  }
-
+  // 1. Persist order to the site DB first — this is the source of truth.
+  //    Bot forwarding below is best-effort and must NEVER block order creation,
+  //    so a bot outage does not lose the order.
+  let savedOrderId: string;
+  let demo = false;
   try {
     const scheduledDate = new Date(scheduledAt);
 
@@ -118,19 +96,55 @@ export async function createOrder(formData: FormData) {
       price: product.price,
     });
 
-    return {
-      success: true,
-      orderId: order.id,
-      message: `Заказ №${order.id.slice(0, 8)} создан. Мы свяжемся с вами по телефону ${phone}.`,
-    };
+    savedOrderId = order.id;
   } catch (err) {
     console.error("Order DB insert failed (demo mode):", err);
-    const orderId = `demo-${Math.random().toString(36).slice(2, 10)}`;
-    return {
-      success: true,
-      demo: true,
-      orderId,
-      message: `Демо-заказ №${orderId} принят. В production он будет сохранён в PostgreSQL и продублирован в бот.`,
-    };
+    savedOrderId = `demo-${Math.random().toString(36).slice(2, 10)}`;
+    demo = true;
   }
+
+  // 2. Forward water orders to the Telegram bot API (best-effort).
+  //    The order is already saved above; a bot failure is logged but does not
+  //    surface to the customer.
+  if (!demo && hasBotApiCredentials() && product.category === "water") {
+    try {
+      const botWater = await fetchBotWater();
+      const waterType = findWaterTypeForProduct(productId, botWater);
+      if (waterType) {
+        const botOrder: BotOrderInput = {
+          telegram_id: telegramId,
+          data_delivery: scheduledAt,
+          client_name: name,
+          client_address: address,
+          number: phone,
+          water_type: waterType,
+          bottles: quantity,
+          apartment: apartment || undefined,
+          floor: floor || undefined,
+          district: undefined,
+        };
+        const botResult = await submitOrderToBot(botOrder);
+        if (!botResult.ok) {
+          console.error(
+            "[order] bot forward failed (order still saved):",
+            botResult.error
+          );
+        }
+      }
+    } catch (e) {
+      console.error("[order] bot forward threw (order still saved):", e);
+    }
+  }
+
+  const orderLabel = savedOrderId.slice(0, 8);
+  const message = demo
+    ? `Демо-заказ №${orderLabel} принят. В production он будет сохранён в базе сайта.`
+    : `Заказ №${orderLabel} создан. Мы свяжемся с вами по телефону ${phone}.`;
+
+  return {
+    success: true,
+    orderId: savedOrderId,
+    demo,
+    message,
+  };
 }
