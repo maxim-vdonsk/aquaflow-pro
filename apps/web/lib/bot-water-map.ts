@@ -44,12 +44,18 @@ export function mapBotWaterToProducts(botWater: BotWaterItem[]): MappedProduct[]
 
 export function mergeWithStaticCatalog(botWater: BotWaterItem[]): MappedProduct[] {
   const mapped = mapBotWaterToProducts(botWater);
-  const mappedIds = new Set(mapped.map((p) => p.id));
+  // Slugs the bot already provides — static water with the same slug is a
+  // duplicate and must be dropped (bot is the source of truth for water).
+  const mappedSlugs = new Set(mapped.map((p) => p.slug));
 
-  // Append non-water static products
+  // Append static products: non-water always, water only if not already
+  // covered by the bot (e.g. bot API unavailable).
   for (const p of products) {
-    if (p.category !== "water" || !mappedIds.has(p.id)) {
-      mapped.push({ ...p, water_type: p.category === "water" ? p.id : undefined });
+    if (p.category === "water") {
+      if (mappedSlugs.has(p.slug)) continue;
+      mapped.push({ ...p, water_type: p.id });
+    } else {
+      mapped.push({ ...p, water_type: undefined });
     }
   }
 
