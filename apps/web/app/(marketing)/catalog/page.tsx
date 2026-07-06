@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { CatalogPageClient } from "@/components/catalog-page-client";
 import { getCatalogProducts } from "@/lib/catalog";
 

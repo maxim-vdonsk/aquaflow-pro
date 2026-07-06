@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getCatalogProducts } from "@/lib/catalog";
 import { OrderForm } from "./order-form";
 
