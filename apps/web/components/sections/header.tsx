@@ -5,10 +5,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { CartButton } from "@/components/cart/cart-button";
 
 const nav = [
   { href: "/", label: "Главная" },
   { href: "/catalog", label: "Каталог" },
+  { href: "/cart", label: "Корзина" },
   { href: "/order", label: "Заказ" },
   { href: "/about", label: "О нас" },
 ];
@@ -69,6 +71,7 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <CartButton variant="full" />
           <Button asChild size="sm" variant="outline" className="rounded-full border-[var(--color-border-hi)]">
             <Link href="/account">Личный кабинет</Link>
           </Button>
@@ -113,6 +116,9 @@ export function Header() {
                 </motion.div>
               ))}
               <div className="mt-4 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <CartButton variant="compact" className="flex-1 justify-center" />
+                </div>
                 <Button asChild variant="outline">
                   <Link href="/account" onClick={() => setOpen(false)}>Личный кабинет</Link>
                 </Button>

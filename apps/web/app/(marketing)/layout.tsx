@@ -2,6 +2,7 @@ import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { CustomCursor } from "@/components/custom-cursor";
 import { PageLoader } from "@/components/page-loader";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 
 export default function MarketingLayout({
   children,
@@ -16,6 +17,7 @@ export default function MarketingLayout({
       <Header />
       <main>{children}</main>
       <Footer />
+      <CartDrawer />
     </>
   );
 }

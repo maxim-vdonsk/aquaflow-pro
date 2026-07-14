@@ -12,6 +12,7 @@ import { orderSchema, type OrderInput } from "@/lib/schema";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/app/actions/order";
 import type { MappedProduct } from "@/lib/bot-water-map";
+import { useCartStore } from "@/lib/cart-store";
 
 const CATEGORY_LABEL: Record<string, string> = {
   water: "Вода",
@@ -44,6 +45,19 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
   const [result, setResult] = React.useState<
     Awaited<ReturnType<typeof createOrder>> | null
   >(null);
+
+  // Pre-fill quantities from the persisted cart on first mount.
+  const cartLines = useCartStore((s) => s.lines);
+  const cartClear = useCartStore((s) => s.clear);
+  const cartSeededRef = React.useRef(false);
+  React.useEffect(() => {
+    if (cartSeededRef.current) return;
+    if (cartLines.length === 0) return;
+    cartSeededRef.current = true;
+    const seeded: Record<string, number> = {};
+    for (const l of cartLines) seeded[l.id] = l.qty;
+    setQty((prev) => ({ ...seeded, ...prev }));
+  }, [cartLines]);
 
   const setQuantity = (id: string, value: number) => {
     const next = Math.max(0, Math.min(50, Math.floor(value) || 0));
@@ -105,7 +119,10 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
     );
     const res = await createOrder(formData);
     setResult(res);
-    if (res?.success) setQty({});
+    if (res?.success) {
+      setQty({});
+      cartClear();
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ interface ProductCardProps {
   product: Product;
   onAdd?: (product: Product) => void;
   added?: boolean;
+  qty?: number;
 }
 
 const categoryLabels: Record<Product["category"], string> = {
@@ -29,7 +30,7 @@ const categoryColor: Record<Product["category"], "cyan" | "pink" | "yellow" | "a
   accessory: "accent",
 };
 
-export function ProductCard({ product, onAdd, added }: ProductCardProps) {
+export function ProductCard({ product, onAdd, added, qty }: ProductCardProps) {
   return (
     <TiltCard className="h-full rounded-[var(--radius-lg)]">
       <Card className="flex h-full flex-col overflow-hidden border-[var(--color-border)] bg-[var(--color-card)]">
@@ -56,10 +57,12 @@ export function ProductCard({ product, onAdd, added }: ProductCardProps) {
               size="sm"
               variant={added ? "secondary" : "default"}
               onClick={() => onAdd?.(product)}
-              aria-label={added ? "Добавлено" : "Добавить в корзину"}
+              aria-label={added ? "Добавить ещё" : "Добавить в корзину"}
             >
               {added ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-              <span className="ml-2 hidden sm:inline">{added ? "Добавлено" : "В корзину"}</span>
+              <span className="ml-2 hidden sm:inline">
+                {added ? `В корзине: ${qty ?? 1}` : "В корзину"}
+              </span>
             </Button>
           </MagneticButton>
         </CardFooter>

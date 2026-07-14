@@ -6,6 +6,13 @@ import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import type { MappedProduct } from "@/lib/bot-water-map";
+import {
+  useCartStore,
+  useCartCount,
+  useCartTotal,
+  useCartHydrated,
+} from "@/lib/cart-store";
+import { formatPrice } from "@/lib/utils";
 
 type Category = MappedProduct["category"] | "all";
 
@@ -52,15 +59,32 @@ export function CatalogPageClient({
 }: {
   products: MappedProduct[];
 }) {
+  const hydrated = useCartHydrated();
+  const lines = useCartStore((s) => s.lines);
+  const add = useCartStore((s) => s.add);
+  const open = useCartStore((s) => s.open);
+  const count = useCartCount();
+  const total = useCartTotal();
+
   const [filter, setFilter] = React.useState<Category>("all");
-  const [added, setAdded] = React.useState<Set<string>>(new Set());
 
   const filtered =
     filter === "all" ? products : products.filter((p) => p.category === filter);
 
+  // qty map keyed by product id — built from the cart store lines
+  const qtyMap = React.useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const l of lines) m[l.id] = l.qty;
+    return m;
+  }, [lines]);
+
   const handleAdd = (product: MappedProduct) => {
-    setAdded((prev) => new Set(prev).add(product.id));
+    add(product, 1);
+    open();
   };
+
+  const shownCount = hydrated ? count : 0;
+  const shownTotal = hydrated ? total : 0;
 
   return (
     <div className="relative py-20">
@@ -121,7 +145,8 @@ export function CatalogPageClient({
               <ProductCard
                 product={product}
                 onAdd={handleAdd}
-                added={added.has(product.id)}
+                added={(qtyMap[product.id] ?? 0) > 0}
+                qty={qtyMap[product.id] ?? 0}
               />
             </motion.div>
           ))}
@@ -137,12 +162,16 @@ export function CatalogPageClient({
           </Reveal>
         )}
 
-        {added.size > 0 && (
-          <div className="fixed bottom-6 right-6 z-40">
-            <Badge variant="default" className="px-4 py-2 text-sm shadow-[0_8px_32px_rgba(125,249,255,0.25)]">
-              В корзине {added.size} товаров
+        {shownCount > 0 && (
+          <button
+            onClick={open}
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-[var(--color-background)] shadow-[0_8px_32px_rgba(125,249,255,0.35)] transition-transform hover:scale-105"
+          >
+            <Badge variant="default" className="bg-[var(--color-background)] px-2 py-1 text-[var(--color-primary)]">
+              {shownCount} шт
             </Badge>
-          </div>
+            <span>В корзине · {formatPrice(shownTotal)}</span>
+          </button>
         )}
       </div>
     </div>
