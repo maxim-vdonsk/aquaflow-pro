@@ -108,7 +108,7 @@ export async function createOrder(formData: FormData) {
     const [order] = await db
       .insert(orders)
       .values({
-        userId: session?.user?.id ?? "guest",
+        userId: session?.user?.id ?? null,
         status: "pending",
         total,
         scheduledAt: scheduledDate,

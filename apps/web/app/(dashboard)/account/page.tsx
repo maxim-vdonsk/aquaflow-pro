@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/sign-out-button";
-import { AccountTelegramLink } from "@/components/account-telegram-link";
 import { AccountEmailVerify } from "@/components/account-email-verify";
 import { updatePhone } from "@/app/actions/profile";
 import {
@@ -14,7 +13,6 @@ import {
   CreditCard,
   Mail,
   Smartphone,
-  MessageCircle,
   ShieldCheck,
   ShieldAlert,
 } from "lucide-react";
@@ -29,7 +27,6 @@ const menu = [
 export default async function AccountPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   const u = session?.user;
-  const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
   if (!u) {
     return (
@@ -98,35 +95,6 @@ export default async function AccountPage() {
                 <Button type="submit" variant="outline">Сохранить</Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <MessageCircle className="h-5 w-5 text-[var(--color-accent)]" />
-              Telegram
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-muted-foreground)]">Статус</span>
-              <span className="font-medium">
-                {u.telegramId ? `Привязан (ID ${u.telegramId})` : "Не привязан"}
-              </span>
-            </div>
-            {!u.telegramId && telegramBotUsername ? (
-              <>
-                <AccountTelegramLink botUsername={telegramBotUsername} />
-                <p className="text-xs text-[var(--color-muted-foreground)]">
-                  Нажмите кнопку выше, чтобы привязать Telegram-аккаунт.
-                </p>
-              </>
-            ) : (
-              <p className="text-xs text-[var(--color-muted-foreground)]">
-                Telegram уже привязан к аккаунту.
-              </p>
-            )}
           </CardContent>
         </Card>
       </div>

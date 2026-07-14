@@ -60,8 +60,10 @@ export const products = pgTable("products", {
 export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    // nullable + ON DELETE SET NULL: guest orders (no session) have no user
+    // row. Keep the FK so authenticated orders still cascade-cleanup on
+    // account deletion, but allow null for walk-in site orders.
+    .references(() => user.id, { onDelete: "set null" }),
   status: orderStatusEnum("status").default("pending").notNull(),
   total: integer("total").notNull(),
   addressId: uuid("address_id").references(() => addresses.id, { onDelete: "set null" }),
@@ -75,9 +77,11 @@ export const orderItems = pgTable("order_items", {
   orderId: uuid("order_id")
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
-  productId: uuid("product_id")
-    .notNull()
-    .references(() => products.id, { onDelete: "restrict" }),
+  productId: text("product_id")
+    // text (no FK): the bot's catalog exposes water_type ("water1"…) as the
+    // product id; static catalog uses uuid. Both must round-trip as a plain
+    // string snapshot of what was ordered.
+    .notNull(),
   quantity: integer("quantity").notNull(),
   price: integer("price").notNull(), // snapshot price in cents
 });

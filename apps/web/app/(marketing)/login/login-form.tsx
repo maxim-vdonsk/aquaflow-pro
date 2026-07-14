@@ -1,25 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
-import { TelegramLoginButton } from "@/components/telegram-login";
 import { setPhone } from "@/app/actions/profile";
 
-interface LoginFormProps {
-  telegramBotUsername?: string;
-  showTelegramLogin?: boolean;
-}
+interface LoginFormProps {}
 
-export function LoginForm({
-  telegramBotUsername,
-  showTelegramLogin,
-}: LoginFormProps) {
-  const router = useRouter();
+export function LoginForm({}: LoginFormProps) {
   const [mode, setMode] = React.useState<"signin" | "signup">("signin");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -121,30 +112,6 @@ export function LoginForm({
               {mode === "signin" ? "Войти" : "Создать аккаунт"}
             </Button>
           </form>
-
-          {showTelegramLogin && telegramBotUsername && (
-            <>
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-[var(--color-border)]" />
-                </div>
-                <span className="relative flex justify-center text-xs uppercase text-[var(--color-muted-foreground)]">
-                  <span className="bg-[var(--color-card)] px-2">или</span>
-                </span>
-              </div>
-
-              <div className="flex justify-center">
-                <TelegramLoginButton
-                  botUsername={telegramBotUsername}
-                  onLinked={() => router.push("/account")}
-                  onError={(msg) => setError(msg)}
-                />
-              </div>
-              <p className="mt-3 text-center text-xs text-[var(--color-muted-foreground)]">
-                Вход через Telegram работает после регистрации по email.
-              </p>
-            </>
-          )}
 
           <p className="mt-6 text-center text-sm text-[var(--color-muted-foreground)]">
             {mode === "signin" ? "Нет аккаунта? " : "Уже есть аккаунт? "}
