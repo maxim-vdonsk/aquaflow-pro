@@ -66,6 +66,11 @@ export const orders = pgTable("orders", {
     .references(() => user.id, { onDelete: "set null" }),
   status: orderStatusEnum("status").default("pending").notNull(),
   total: integer("total").notNull(),
+  // Denormalized order contacts: set for every order (also for guests), so
+  // a later sign-in can match historical orders by phone.
+  contactName: text("contact_name"),
+  contactPhone: text("contact_phone"),
+  contactAddress: text("contact_address"),
   addressId: uuid("address_id").references(() => addresses.id, { onDelete: "set null" }),
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
   paymentStatus: paymentStatusEnum("payment_status").default("pending").notNull(),

@@ -113,6 +113,12 @@ export async function createOrder(formData: FormData) {
         total,
         scheduledAt: scheduledDate,
         paymentStatus: "pending",
+        contactName: name.trim() || null,
+        contactPhone: phone.trim() || null,
+        contactAddress:
+          [address.trim(), apartment && `кв. ${apartment}`, floor && `эт. ${floor}`]
+            .filter(Boolean)
+            .join(", ") || null,
       })
       .returning({ id: orders.id });
 

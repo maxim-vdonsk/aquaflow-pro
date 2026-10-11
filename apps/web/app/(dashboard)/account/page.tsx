@@ -1,6 +1,17 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { db, orders, orderItems } from "@aquaflow/database";
+import { desc, eq, inArray, or, sql } from "drizzle-orm";
+import { getCatalogProducts } from "@/lib/catalog";
+import { products as staticProducts } from "@/lib/data";
+import {
+  STATUS_LABELS,
+  STATUS_STYLES,
+  PAYMENT_LABELS,
+  centsToRub,
+  formatOrderDate,
+} from "@/lib/order-view";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,18 +19,17 @@ import { SignOutButton } from "@/components/sign-out-button";
 import { AccountEmailVerify } from "@/components/account-email-verify";
 import { updatePhone } from "@/app/actions/profile";
 import {
-  Package,
   MapPin,
   Calendar,
   CreditCard,
   Mail,
+  Package,
   Smartphone,
   ShieldCheck,
   ShieldAlert,
 } from "lucide-react";
 
 const menu = [
-  { icon: Package, title: "Мои заказы", desc: "История и статусы доставок" },
   { icon: MapPin, title: "Адреса", desc: "Управление адресами доставки" },
   { icon: Calendar, title: "Подписки", desc: "Регулярные поставки воды" },
   { icon: CreditCard, title: "Оплата", desc: "Способы оплаты и чеки" },
@@ -41,6 +51,59 @@ export default async function AccountPage() {
   }
 
   const verified = Boolean(u.emailVerified);
+
+  // Orders attached to the account or, for guest history, to the last 10
+  // digits of the account phone (+7/8 prefix insensitive).
+  const myPhoneDigits =
+    (u.phone || "").replace(/\D/g, "").slice(-10) || null;
+  const myOrders = await db
+    .select({
+      id: orders.id,
+      createdAt: orders.createdAt,
+      status: orders.status,
+      paymentStatus: orders.paymentStatus,
+      total: orders.total,
+    })
+    .from(orders)
+    .where(
+      or(
+        eq(orders.userId, u.id),
+        myPhoneDigits
+          ? sql`right(regexp_replace(${orders.contactPhone}, '[^0-9]', '', 'g'), 10) = ${myPhoneDigits}`
+          : sql`false`,
+      ),
+    )
+    .orderBy(desc(orders.createdAt))
+    .limit(20);
+
+  const [catalog] = await Promise.all([
+    myOrders.length
+      ? getCatalogProducts().catch(() => [] as Awaited<ReturnType<typeof getCatalogProducts>>)
+      : Promise.resolve([] as Awaited<ReturnType<typeof getCatalogProducts>>),
+  ]);
+
+  const myOrderIds = myOrders.map((o) => o.id);
+  const myItems = myOrderIds.length
+    ? await db
+        .select({
+          orderId: orderItems.orderId,
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+        })
+        .from(orderItems)
+        .where(inArray(orderItems.orderId, myOrderIds))
+    : [];
+
+  const productNames = new Map(catalog.map((p) => [p.id, p.name]));
+  for (const p of staticProducts) {
+    if (!productNames.has(p.id)) productNames.set(p.id, p.name);
+  }
+  const itemsByOrder = new Map<string, string>();
+  for (const item of myItems) {
+    const label = `${item.quantity} × ${productNames.get(item.productId) ?? item.productId}`;
+    const prev = itemsByOrder.get(item.orderId);
+    itemsByOrder.set(item.orderId, prev ? `${prev}, ${label}` : label);
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
@@ -117,6 +180,58 @@ export default async function AccountPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mb-8 mt-8">
+        <CardHeader>
+          <CardTitle>Мои заказы</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          {myOrders.length === 0 ? (
+            <p className="p-6 text-[var(--color-muted-foreground)]">
+              Заказов пока нет. История: заказы с аккаунта и заказы по твоему
+              телефону (даже сделанные без входа).
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-left">
+                  <tr className="border-b text-[var(--color-muted-foreground)]">
+                    <th className="px-6 py-3 font-medium">Дата</th>
+                    <th className="px-6 py-3 font-medium">Состав</th>
+                    <th className="px-6 py-3 text-right font-medium">Сумма</th>
+                    <th className="px-6 py-3 font-medium">Статус</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {myOrders.map((order) => (
+                    <tr key={order.id}>
+                      <td className="whitespace-nowrap px-6 py-4 text-[var(--color-muted-foreground)]">
+                        {formatOrderDate(order.createdAt)}
+                      </td>
+                      <td className="px-6 py-4">{itemsByOrder.get(order.id) ?? "—"}</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right font-medium">
+                        {centsToRub(order.total)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 font-medium">
+                        <span
+                          className={
+                            STATUS_STYLES[order.status] ?? "text-[var(--color-foreground)]"
+                          }
+                        >
+                          {STATUS_LABELS[order.status] ?? order.status}
+                        </span>
+                        <span className="block text-xs text-[var(--color-muted-foreground)]">
+                          {PAYMENT_LABELS[order.paymentStatus] ?? order.paymentStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {menu.map(({ icon: Icon, title, desc }) => (

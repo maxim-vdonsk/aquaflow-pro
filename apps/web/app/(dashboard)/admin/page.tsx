@@ -6,49 +6,18 @@ import { db, orders, orderItems, user } from "@aquaflow/database";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getCatalogProducts } from "@/lib/catalog";
 import { products as staticProducts } from "@/lib/data";
+import {
+  STATUS_LABELS,
+  STATUS_STYLES,
+  PAYMENT_LABELS,
+  centsToRub,
+  formatOrderDate,
+} from "@/lib/order-view";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUsers } from "@/components/admin/admin-users";
 import { Users, ShoppingCart, TrendingUp, CalendarClock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Новый",
-  confirmed: "Подтверждён",
-  preparing: "Собирается",
-  delivering: "В доставке",
-  delivered: "Доставлен",
-  cancelled: "Отменён",
-};
-
-const STATUS_STYLES: Record<string, string> = {
-  pending: "text-amber-600",
-  confirmed: "text-sky-600",
-  preparing: "text-sky-600",
-  delivering: "text-sky-600",
-  delivered: "text-emerald-600",
-  cancelled: "text-red-600",
-};
-
-const PAYMENT_LABELS: Record<string, string> = {
-  pending: "Ожидает оплаты",
-  paid: "Оплачен",
-  failed: "Ошибка оплаты",
-  refunded: "Возврат",
-};
-
-const moneyFmt = new Intl.NumberFormat("ru-RU", {
-  style: "currency",
-  currency: "RUB",
-  maximumFractionDigits: 0,
-});
-
-const dateFmt = new Intl.DateTimeFormat("ru-RU", {
-  day: "2-digit",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 export default async function AdminPage({
   searchParams,
@@ -93,6 +62,8 @@ export default async function AdminPage({
             scheduledAt: orders.scheduledAt,
             customerName: user.name,
             customerEmail: user.email,
+            contactName: orders.contactName,
+            contactPhone: orders.contactPhone,
           })
           .from(orders)
           .leftJoin(user, eq(user.id, orders.userId))
@@ -152,7 +123,7 @@ export default async function AdminPage({
           {
             icon: TrendingUp,
             label: "Выручка (без отмен)",
-            value: moneyFmt.format(stats.revenue / 100),
+            value: centsToRub(stats.revenue),
           },
         ]
       : [];
@@ -233,17 +204,17 @@ export default async function AdminPage({
                       {lastOrders.map((order) => (
                         <tr key={order.id} className="align-top">
                           <td className="whitespace-nowrap px-6 py-4 text-[var(--color-muted-foreground)]">
-                            {dateFmt.format(order.createdAt)}
+                            {formatOrderDate(order.createdAt)}
                           </td>
                           <td className="px-6 py-4">
-                            {order.customerName ?? "Гость (заказ с сайта)"}
+                            {order.customerName ?? order.contactName ?? "Гость (заказ с сайта)"}
                             <div className="text-xs text-[var(--color-muted-foreground)]">
-                              {order.customerEmail ?? "—"}
+                              {order.customerEmail ?? order.contactPhone ?? "—"}
                             </div>
                           </td>
                           <td className="px-6 py-4">{itemsByOrder.get(order.id) ?? "—"}</td>
                           <td className="whitespace-nowrap px-6 py-4 text-right font-medium">
-                            {moneyFmt.format(order.total / 100)}
+                            {centsToRub(order.total)}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-[var(--color-muted-foreground)]">
                             {PAYMENT_LABELS[order.paymentStatus] ?? order.paymentStatus}
