@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { db, orders, orderItems, addresses, subscriptions, products } from "@aquaflow/database";
-import { desc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { getCatalogProducts } from "@/lib/catalog";
 import { products as staticProducts } from "@/lib/data";
 import {
@@ -115,6 +115,7 @@ export default async function AccountPage() {
     .where(eq(addresses.userId, u.id))
     .orderBy(desc(addresses.createdAt));
 
+  // Only active subscriptions are listed; cancelled ones stay in the DB.
   const mySubs = await db
     .select({
       id: subscriptions.id,
@@ -125,7 +126,7 @@ export default async function AccountPage() {
     })
     .from(subscriptions)
     .innerJoin(products, eq(products.id, subscriptions.productId))
-    .where(eq(subscriptions.userId, u.id))
+    .where(and(eq(subscriptions.userId, u.id), eq(subscriptions.active, true)))
     .orderBy(desc(subscriptions.createdAt));
 
   const catalogProducts = await db
