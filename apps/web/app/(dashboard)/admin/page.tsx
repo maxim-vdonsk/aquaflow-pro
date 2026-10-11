@@ -114,7 +114,7 @@ export default async function AdminPage({
   ]);
 
   const [stats] = statsRows;
-  const [{ users: userCount }] = usersRows;
+  const userCount = usersRows.length ? usersRows[0].users : 0;
 
   const orderIds = lastOrders.map((o) => o.id);
   const items = orderIds.length
