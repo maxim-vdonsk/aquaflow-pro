@@ -97,9 +97,46 @@ export async function createOrder(formData: FormData) {
     ? Number(userTelegramId)
     : phoneToSyntheticTelegramId(phone);
 
-  // 1. Persist order to the site DB first — this is the source of truth.
-  //    Bot forwarding below is best-effort and must NEVER block order creation,
-  //    so a bot outage does not lose the order.
+  // 1. Forward to the bot FIRST — the bot validates the delivery zone (Yandex
+  //    geocoder), persists the order in its DB, notifies managers and writes
+  //    Google Sheets. On a zone rejection nothing must be saved, so we surface
+  //    the error to the customer and stop here. Other bot failures are
+  //    best-effort: the order is still saved locally (site remains available
+  //    during a bot outage).
+  if (hasBotApiCredentials()) {
+    const botItems: SiteOrderItemInput[] = resolved.map((it) => ({
+      name: it.product.name,
+      quantity: it.quantity,
+      price: Math.round(it.product.price / 100), // cents → rubles
+      category: it.product.category,
+      water_type: it.product.water_type,
+    }));
+    const botResult = await submitSiteOrderToBot({
+      telegram_id: telegramId,
+      data_delivery: scheduledAt,
+      client_name: name,
+      client_address: address,
+      number: phone,
+      apartment,
+      floor,
+      comment,
+      items: botItems,
+    });
+    if (botResult.ok) {
+    } else if (botResult.error && /Адрес не входит/.test(botResult.error)) {
+      // The bot rejected the address as outside the delivery zone (zone check
+      // lives in the bot's /api/site-order handler).
+      return {
+        success: false,
+        message:
+          "К сожалению, этот адрес не входит в зону доставки. Мы доставляем в Краснодаре и ближайших населённых пунктах (Яблоновский, Новая Адыгея и др.). Проверьте адрес доставки.",
+      };
+    } else {
+      console.error("[order] bot forward failed (order still saved):", botResult.error);
+    }
+  }
+
+  // 2. Persist order to the site DB — the site-side record for the cabinet.
   let savedOrderId: string;
   let demo = false;
   try {
@@ -140,41 +177,6 @@ export async function createOrder(formData: FormData) {
     console.error("Order DB insert failed (demo mode):", err);
     savedOrderId = `demo-${Math.random().toString(36).slice(2, 10)}`;
     demo = true;
-  }
-
-  // 2. Forward the full cart to the Telegram bot API (best-effort, any category).
-  //    One request → one TG message to managers with all items + total.
-  //    The order is already saved above; a bot failure is logged but does not
-  //    surface to the customer.
-  if (!demo && hasBotApiCredentials()) {
-    try {
-      const botItems: SiteOrderItemInput[] = resolved.map((it) => ({
-        name: it.product.name,
-        quantity: it.quantity,
-        price: Math.round(it.product.price / 100), // cents → rubles
-        category: it.product.category,
-        water_type: it.product.water_type,
-      }));
-      const botResult = await submitSiteOrderToBot({
-        telegram_id: telegramId,
-        data_delivery: scheduledAt,
-        client_name: name,
-        client_address: address,
-        number: phone,
-        apartment,
-        floor,
-        comment,
-        items: botItems,
-      });
-      if (!botResult.ok) {
-        console.error(
-          "[order] bot forward failed (order still saved):",
-          botResult.error
-        );
-      }
-    } catch (e) {
-      console.error("[order] bot forward threw (order still saved):", e);
-    }
   }
 
   const orderLabel = savedOrderId.slice(0, 8);
