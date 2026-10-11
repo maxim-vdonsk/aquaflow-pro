@@ -141,16 +141,21 @@ export default async function AdminPage({
     itemsByOrder.set(item.orderId, prev ? `${prev}, ${label}` : label);
   }
 
-  const statCards = [
-    { icon: ShoppingCart, label: "Заказов всего", value: String(stats.totalOrders) },
-    { icon: CalendarClock, label: "Заказов сегодня", value: String(stats.todayOrders) },
-    { icon: Users, label: "Пользователей сайта", value: String(userCount) },
-    {
-      icon: TrendingUp,
-      label: "Выручка (без отмен)",
-      value: moneyFmt.format(stats.revenue / 100),
-    },
-  ];
+  // statCards live on the orders tab only; statsRows is empty on the users
+  // tab, so guard the whole computation instead of destructure-crashing.
+  const statCards =
+    activeTab === "orders" && statsRows.length > 0
+      ? [
+          { icon: ShoppingCart, label: "Заказов всего", value: String(stats.totalOrders) },
+          { icon: CalendarClock, label: "Заказов сегодня", value: String(stats.todayOrders) },
+          { icon: Users, label: "Пользователей сайта", value: String(userCount) },
+          {
+            icon: TrendingUp,
+            label: "Выручка (без отмен)",
+            value: moneyFmt.format(stats.revenue / 100),
+          },
+        ]
+      : [];
 
   const tabs = [
     { key: "orders", label: "Заявки", href: "/admin" },
