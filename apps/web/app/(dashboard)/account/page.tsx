@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { db, orders, orderItems } from "@aquaflow/database";
+import { db, orders, orderItems, addresses, subscriptions, products } from "@aquaflow/database";
 import { desc, eq, inArray, or, sql } from "drizzle-orm";
 import { getCatalogProducts } from "@/lib/catalog";
 import { products as staticProducts } from "@/lib/data";
@@ -18,22 +18,26 @@ import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/sign-out-button";
 import { AccountEmailVerify } from "@/components/account-email-verify";
 import { updatePhone } from "@/app/actions/profile";
+import { addAddress, deleteAddress } from "@/app/actions/addresses";
+import { addSubscription, cancelSubscription } from "@/app/actions/subscriptions";
 import {
-  MapPin,
-  Calendar,
-  CreditCard,
   Mail,
-  Package,
   Smartphone,
   ShieldCheck,
   ShieldAlert,
+  ShoppingBag,
+  MapPin,
+  Repeat,
+  CreditCard,
+  Trash2,
+  X,
 } from "lucide-react";
 
-const menu = [
-  { icon: MapPin, title: "Адреса", desc: "Управление адресами доставки" },
-  { icon: Calendar, title: "Подписки", desc: "Регулярные поставки воды" },
-  { icon: CreditCard, title: "Оплата", desc: "Способы оплаты и чеки" },
-];
+const FREQ_LABELS: Record<string, string> = {
+  weekly: "раз в неделю",
+  biweekly: "раз в 2 недели",
+  monthly: "раз в месяц",
+};
 
 export default async function AccountPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -105,6 +109,30 @@ export default async function AccountPage() {
     itemsByOrder.set(item.orderId, prev ? `${prev}, ${label}` : label);
   }
 
+  const myAddresses = await db
+    .select()
+    .from(addresses)
+    .where(eq(addresses.userId, u.id))
+    .orderBy(desc(addresses.createdAt));
+
+  const mySubs = await db
+    .select({
+      id: subscriptions.id,
+      frequency: subscriptions.frequency,
+      nextDeliveryAt: subscriptions.nextDeliveryAt,
+      active: subscriptions.active,
+      productName: products.name,
+    })
+    .from(subscriptions)
+    .innerJoin(products, eq(products.id, subscriptions.productId))
+    .where(eq(subscriptions.userId, u.id))
+    .orderBy(desc(subscriptions.createdAt));
+
+  const catalogProducts = await db
+    .select({ id: products.id, name: products.name })
+    .from(products)
+    .limit(30);
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -133,55 +161,65 @@ export default async function AccountPage() {
         </Link>
       )}
 
-      <div className="mb-8 grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Mail className="h-5 w-5 text-[var(--color-primary)]" />
-              Контакты
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-muted-foreground)]">Email</span>
-              <span className="font-medium">{u.email}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {verified ? (
-                <>
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span className="text-sm text-emerald-400">Почта подтверждена</span>
-                </>
-              ) : (
-                <>
-                  <ShieldAlert className="h-4 w-4 text-[var(--color-yellow)]" />
-                  <span className="text-sm text-[var(--color-yellow)]">Почта не подтверждена</span>
-                </>
-              )}
-            </div>
-            {!verified && <AccountEmailVerify email={u.email} />}
-
-            <form action={updatePhone} className="space-y-2 pt-2">
-              <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium">
-                <Smartphone className="h-4 w-4 text-[var(--color-primary)]" />
-                Телефон
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  defaultValue={u.phone || ""}
-                  placeholder="+7 999 123-45-67"
-                />
-                <Button type="submit" variant="outline">Сохранить</Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+      <div className="mb-8 flex flex-wrap gap-3">
+        <Button asChild>
+          <Link href="/order">
+            <ShoppingBag className="h-4 w-4" />
+            Сделать заказ
+          </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/catalog">Посмотреть каталог</Link>
+        </Button>
       </div>
 
-      <Card className="mb-8 mt-8">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Mail className="h-5 w-5 text-[var(--color-primary)]" />
+            Контакты
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-[var(--color-muted-foreground)]">Email</span>
+            <span className="font-medium">{u.email}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {verified ? (
+              <>
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <span className="text-sm text-emerald-400">Почта подтверждена</span>
+              </>
+            ) : (
+              <>
+                <ShieldAlert className="h-4 w-4 text-[var(--color-yellow)]" />
+                <span className="text-sm text-[var(--color-yellow)]">Почта не подтверждена</span>
+              </>
+            )}
+          </div>
+          {!verified && <AccountEmailVerify email={u.email} />}
+
+          <form action={updatePhone} className="space-y-2 pt-2">
+            <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium">
+              <Smartphone className="h-4 w-4 text-[var(--color-primary)]" />
+              Телефон
+            </label>
+            <div className="flex gap-2">
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                defaultValue={u.phone || ""}
+                placeholder="+7 999 123-45-67"
+              />
+              <Button type="submit" variant="outline">Сохранить</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>Мои заказы</CardTitle>
         </CardHeader>
@@ -233,21 +271,150 @@ export default async function AccountPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        {menu.map(({ icon: Icon, title, desc }) => (
-          <Card key={title} className="transition-shadow hover:shadow-md">
-            <CardContent className="flex items-start gap-4 p-6">
-              <div className="rounded-xl bg-[var(--color-primary)]/10 p-3 text-[var(--color-primary)]">
-                <Icon className="h-6 w-6" />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MapPin className="h-5 w-5 text-[var(--color-primary)]" />
+            Адреса доставки
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {myAddresses.length === 0 ? (
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              Адресов пока нет — добавь первый ниже.
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {myAddresses.map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">
+                      {a.city}, {a.street}
+                      {a.apartment ? `, кв. ${a.apartment}` : ""}
+                      {a.entrance ? `, под. ${a.entrance}` : ""}
+                      {a.floor ? `, эт. ${a.floor}` : ""}
+                      {a.isDefault && (
+                        <span className="ml-2 rounded bg-[var(--color-primary)]/15 px-1.5 py-0.5 text-xs text-[var(--color-primary)]">
+                          основной
+                        </span>
+                      )}
+                    </div>
+                    {a.comment && (
+                      <div className="truncate text-xs text-[var(--color-muted-foreground)]">{a.comment}</div>
+                    )}
+                  </div>
+                  <form action={deleteAddress}>
+                    <input type="hidden" name="addressId" value={a.id} />
+                    <Button type="submit" variant="outline" size="sm" aria-label="Удалить адрес">
+                      <Trash2 className="h-4 w-4" />
+                      Удалить
+                    </Button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form action={addAddress} className="space-y-3 border-t border-[var(--color-border)] pt-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Input name="city" placeholder="Город" required />
+              <Input name="street" placeholder="Улица, дом" required />
+              <Input name="apartment" placeholder="Квартира" />
+              <Input name="entrance" placeholder="Подъезд" />
+              <Input name="floor" placeholder="Этаж" />
+              <Input name="comment" placeholder="Комментарий водителю" />
+            </div>
+            <label className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
+              <input type="checkbox" name="isDefault" className="h-4 w-4" />
+              Сделать основным адресом
+            </label>
+            <Button type="submit">Добавить адрес</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Repeat className="h-5 w-5 text-[var(--color-primary)]" />
+            Подписки
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {mySubs.length === 0 ? (
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              Подписок нет — оформи регулярную доставку ниже.
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {mySubs.map((s) => (
+                <li key={s.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                  <div>
+                    <div className="text-sm font-medium">{s.productName}</div>
+                    <div className="text-xs text-[var(--color-muted-foreground)]">
+                      {FREQ_LABELS[s.frequency] ?? s.frequency}
+                      {s.active
+                        ? ` · след. доставка ${formatOrderDate(s.nextDeliveryAt)}`
+                        : " · отменена"}
+                    </div>
+                  </div>
+                  {s.active && (
+                    <form action={cancelSubscription}>
+                      <input type="hidden" name="subscriptionId" value={s.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        <X className="h-4 w-4" />
+                        Отменить
+                      </Button>
+                    </form>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {catalogProducts.length > 0 && (
+            <form action={addSubscription} className="grid gap-3 border-t border-[var(--color-border)] pt-4 sm:grid-cols-[1fr_auto]">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <select
+                  name="productId"
+                  required
+                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                >
+                  <option value="">Выбрать товар…</option>
+                  {catalogProducts.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+                <select
+                  name="frequency"
+                  required
+                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                >
+                  <option value="weekly">раз в неделю</option>
+                  <option value="biweekly">раз в 2 недели</option>
+                  <option value="monthly">раз в месяц</option>
+                </select>
+                <Input name="nextDeliveryAt" type="date" required />
               </div>
-              <div>
-                <h3 className="font-heading text-lg font-semibold">{title}</h3>
-                <p className="text-sm text-[var(--color-muted-foreground)]">{desc}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              <Button type="submit" className="shrink-0">Подписаться</Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <CreditCard className="h-5 w-5 text-[var(--color-primary)]" />
+            Оплата
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-[var(--color-muted-foreground)]">
+          Оплата принимается при получении заказа: наличными или переводом.
+          Статус оплаты каждого заказа показан в таблице «Мои заказы» выше
+          (Ожидает оплаты / Оплачен).
+        </CardContent>
+      </Card>
     </div>
   );
 }
