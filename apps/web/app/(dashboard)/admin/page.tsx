@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db, orders, orderItems, user } from "@aquaflow/database";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getCatalogProducts } from "@/lib/catalog";
+import { products as staticProducts } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, ShoppingCart, TrendingUp, CalendarClock } from "lucide-react";
 
@@ -97,7 +98,12 @@ export default async function AdminPage() {
         .where(inArray(orderItems.orderId, orderIds))
     : [];
 
+  // The live catalog maps water by slug (bot id "water1"…), so historical
+  // order_items with static-catalog uuids must fall back to lib/data names.
   const productNames = new Map(catalog.map((p) => [p.id, p.name]));
+  for (const p of staticProducts) {
+    if (!productNames.has(p.id)) productNames.set(p.id, p.name);
+  }
   const itemsByOrder = new Map<string, string>();
   for (const item of items) {
     const label = `${item.quantity} × ${productNames.get(item.productId) ?? item.productId}`;
