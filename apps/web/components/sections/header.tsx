@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-button";
+import { UserMenu } from "@/components/user-menu";
 
 const nav = [
   { href: "/", label: "Главная" },
@@ -72,9 +73,7 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <CartButton variant="full" />
-          <Button asChild size="sm" variant="outline" className="rounded-full border-[var(--color-border-hi)]">
-            <Link href="/account">Личный кабинет</Link>
-          </Button>
+          <UserMenu variant="desktop" />
           <Button asChild size="sm">
             <Link href="/order">Заказать →</Link>
           </Button>
@@ -119,9 +118,7 @@ export function Header() {
                 <div className="flex items-center gap-3">
                   <CartButton variant="compact" className="flex-1 justify-center" />
                 </div>
-                <Button asChild variant="outline">
-                  <Link href="/account" onClick={() => setOpen(false)}>Личный кабинет</Link>
-                </Button>
+                <UserMenu variant="mobile" />
                 <Button asChild>
                   <Link href="/order" onClick={() => setOpen(false)}>Заказать →</Link>
                 </Button>

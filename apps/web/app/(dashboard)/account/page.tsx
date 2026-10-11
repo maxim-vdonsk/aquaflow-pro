@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,24 @@ export default async function AccountPage() {
         </div>
         <SignOutButton />
       </div>
+
+      {(u as { role?: string }).role === "admin" && (
+        <Link href="/admin" className="mb-8 block">
+          <Card className="border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 transition-colors hover:border-[var(--color-primary)]/60">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="rounded-xl bg-[var(--color-primary)]/10 p-3 text-[var(--color-primary)]">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-heading font-bold">Панель администратора</div>
+                <div className="text-sm text-[var(--color-muted-foreground)]">
+                  Заявки, клиенты, назначение прав →
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      )}
 
       <div className="mb-8 grid gap-6 md:grid-cols-2">
         <Card>
