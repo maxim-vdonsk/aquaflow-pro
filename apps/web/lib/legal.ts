@@ -23,4 +23,5 @@ export const PDN_CONSENT_VERSION = "2026-10-25.1";
 
 export const SITE_NAME = "иван-вода.рф";
 
-export const SITE_URL = "https://xn----7sbbfcmx6bl.xn--p1ai";
+// Для показа человеку (тексты документов) — кириллица, НЕ пуникод-запись.
+export const SITE_URL = "https://иван-вода.рф";

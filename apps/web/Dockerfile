@@ -13,13 +13,9 @@ COPY packages/database/package.json ./packages/database/
 
 RUN pnpm install --frozen-lockfile
 
-COPY . .
-
-RUN pnpm --filter @aquaflow/database build
-RUN pnpm --filter @aquaflow/web build
-
-# LEGAL_* прилетают из docker-compose build.args (.env проекта, не в git):
-# статичные страницы и футер запекают их в HTML во время next build.
+# LEGAL_* прилетают из docker-compose build.args (.env проекта, не в git).
+# ДОЛЖНЫ стоять строго ДО next build: статичные страницы и футер запекают
+# их в HTML во время сборки — объявленные позже они уже не видны билду.
 ARG LEGAL_OPERATOR_NAME
 ARG LEGAL_OPERATOR_SHORT
 ARG LEGAL_OGRNIP
@@ -40,6 +36,11 @@ ENV LEGAL_OPERATOR_NAME=$LEGAL_OPERATOR_NAME \
     LEGAL_BIK=$LEGAL_BIK \
     LEGAL_PHONE=$LEGAL_PHONE \
     LEGAL_EMAIL=$LEGAL_EMAIL
+
+COPY . .
+
+RUN pnpm --filter @aquaflow/database build
+RUN pnpm --filter @aquaflow/web build
 
 # output: standalone — copy static assets next to standalone server
 RUN cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
