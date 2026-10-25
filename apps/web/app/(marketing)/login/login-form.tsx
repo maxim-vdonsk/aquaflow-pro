@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { setPhone } from "@/app/actions/profile";
+import { ConsentCheckbox, CONSENT_ERROR } from "@/components/legal/consent-checkbox";
 
 interface LoginFormProps {}
 
@@ -18,10 +19,16 @@ export function LoginForm({}: LoginFormProps) {
   const [phone, setPhone] = React.useState("");
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  // Отдельное согласие на обработку ПД при регистрации (ст. 9 152-ФЗ).
+  const [consent, setConsent] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (mode === "signup" && !consent) {
+      setError(CONSENT_ERROR);
+      return;
+    }
     setLoading(true);
 
     try {
@@ -102,6 +109,10 @@ export function LoginForm({}: LoginFormProps) {
                 minLength={6}
               />
             </div>
+
+            {mode === "signup" && (
+              <ConsentCheckbox checked={consent} onChange={setConsent} idPrefix="signup" />
+            )}
 
             {error && (
               <p className="rounded-[var(--radius-sm)] bg-[var(--color-destructive)]/10 p-3 text-sm text-[var(--color-destructive)]">{error}</p>

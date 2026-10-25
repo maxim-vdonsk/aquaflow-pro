@@ -13,6 +13,7 @@ import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/app/actions/order";
 import type { MappedProduct } from "@/lib/bot-water-map";
 import { useCartStore } from "@/lib/cart-store";
+import { ConsentCheckbox, CONSENT_ERROR } from "@/components/legal/consent-checkbox";
 
 const CATEGORY_LABEL: Record<string, string> = {
   water: "Вода",
@@ -42,6 +43,8 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
   });
 
   const [qty, setQty] = React.useState<Record<string, number>>({});
+  // Отдельное согласие на обработку ПД (ст. 9 152-ФЗ): чекбокс пустой по умолчанию.
+  const [consent, setConsent] = React.useState(false);
   const [result, setResult] = React.useState<
     Awaited<ReturnType<typeof createOrder>> | null
   >(null);
@@ -117,6 +120,14 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
         }))
       )
     );
+    if (!consent) {
+      setResult({
+        success: false,
+        message: CONSENT_ERROR,
+      } as Awaited<ReturnType<typeof createOrder>>);
+      return;
+    }
+    formData.append("consent", consent ? "1" : "0");
     const res = await createOrder(formData);
     setResult(res);
     if (res?.success) {
@@ -285,6 +296,12 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
                     <span className="text-sm text-[var(--color-muted-foreground)]">Итого</span>
                     <span className="font-heading text-2xl font-bold grad-text">{formatPrice(total)}</span>
                   </div>
+
+                  <ConsentCheckbox
+                    checked={consent}
+                    onChange={setConsent}
+                    idPrefix="order"
+                  />
 
                   <Button
                     type="submit"

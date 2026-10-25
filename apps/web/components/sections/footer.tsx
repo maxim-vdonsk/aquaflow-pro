@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OPERATOR } from "@/lib/legal";
 
 const links = {
   company: [
@@ -12,8 +13,9 @@ const links = {
     { href: "/#faq", label: "FAQ" },
   ],
   legal: [
-    { href: "/privacy", label: "Политика конфиденциальности" },
-    { href: "/terms", label: "Условия использования" },
+    { href: "/privacy", label: "Политика обработки персональных данных" },
+    { href: "/consent", label: "Согласие на обработку ПД" },
+    { href: "/terms", label: "Порядок оформления заказа" },
   ],
 };
 
@@ -85,8 +87,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-[var(--color-border)] pt-6 text-center font-mono text-sm text-[var(--color-muted-foreground)]">
-          © {new Date().getFullYear()} AquaFlow. Все права защищены.
+        <div className="mt-12 border-t border-[var(--color-border)] pt-6 text-center text-xs text-[var(--color-muted-foreground)]">
+          <p className="font-mono">
+            {OPERATOR.legalName} · ИНН {OPERATOR.inn} · ОГРНИП {OPERATOR.ogrnip}
+          </p>
+          <p className="mt-1 font-mono">{OPERATOR.address}</p>
+          <p className="mt-4 font-mono">
+            © {new Date().getFullYear()} {OPERATOR.shortName}. Все права защищены.
+          </p>
         </div>
       </div>
     </footer>

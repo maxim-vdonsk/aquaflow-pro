@@ -1,7 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { db, orders, orderItems } from "@aquaflow/database";
+import { db, orders, orderItems, consentRecords } from "@aquaflow/database";
+import { PDN_CONSENT_VERSION } from "@/lib/legal";
 import { auth } from "@/lib/auth";
 import {
   submitSiteOrderToBot,
@@ -35,6 +36,8 @@ export async function createOrder(formData: FormData) {
   const floor = String(formData.get("floor") ?? "") || undefined;
   const scheduledAt = String(formData.get("scheduledAt") ?? "");
   const comment = String(formData.get("comment") ?? "") || undefined;
+  // Отдельное согласие на обработку ПД (ст. 9 152-ФЗ) — чекбокс обязателен.
+  const consent = formData.get("consent") === "1";
 
   // Cart lines arrive as a JSON-encoded array (order page cart) OR, for the
   // legacy single-product hero form, as productId + quantity fields.
@@ -56,6 +59,12 @@ export async function createOrder(formData: FormData) {
   }
 
   // --- basic validation ---
+  if (!consent)
+    return {
+      success: false,
+      message:
+        "Необходимо дать согласие на обработку персональных данных (отметьте чекбокс под формой)",
+    };
   if (name.trim().length < 2) return { success: false, message: "Укажите имя" };
   if (!/^\+?[\d\s()-]{10,}$/.test(phone))
     return { success: false, message: "Введите корректный телефон" };
@@ -173,6 +182,22 @@ export async function createOrder(formData: FormData) {
     }
 
     savedOrderId = order.id;
+
+    // Лог факта согласия (ст. 9 152-ФЗ): версия текста, IP, User-Agent.
+    // Отказ лога не должен ронять заказ.
+    try {
+      const h = await headers();
+      const ip = (h.get("x-forwarded-for") || "").split(",")[0].trim() || null;
+      const ua = h.get("user-agent") || null;
+      await db.insert(consentRecords).values({
+        kind: "order",
+        version: PDN_CONSENT_VERSION,
+        ip,
+        userAgent: ua,
+      });
+    } catch (err) {
+      console.error("Consent log failed (order kept):", err);
+    }
   } catch (err) {
     console.error("Order DB insert failed (demo mode):", err);
     savedOrderId = `demo-${Math.random().toString(36).slice(2, 10)}`;

@@ -116,6 +116,17 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Логи согласий на обработку ПД (ст. 9 152-ФЗ): доказательство выданного
+// согласия и версии текста на момент оформления заказа.
+export const consentRecords = pgTable("consent_records", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  kind: text("kind").notNull(), // "order" | "signup"
+  version: text("version").notNull(),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
 export type Product = typeof products.$inferSelect;

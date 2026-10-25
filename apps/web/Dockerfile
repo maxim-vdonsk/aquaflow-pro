@@ -18,6 +18,29 @@ COPY . .
 RUN pnpm --filter @aquaflow/database build
 RUN pnpm --filter @aquaflow/web build
 
+# LEGAL_* прилетают из docker-compose build.args (.env проекта, не в git):
+# статичные страницы и футер запекают их в HTML во время next build.
+ARG LEGAL_OPERATOR_NAME
+ARG LEGAL_OPERATOR_SHORT
+ARG LEGAL_OGRNIP
+ARG LEGAL_INN
+ARG LEGAL_ADDRESS
+ARG LEGAL_BANK_ACCOUNT
+ARG LEGAL_BANK_NAME
+ARG LEGAL_BIK
+ARG LEGAL_PHONE
+ARG LEGAL_EMAIL
+ENV LEGAL_OPERATOR_NAME=$LEGAL_OPERATOR_NAME \
+    LEGAL_OPERATOR_SHORT=$LEGAL_OPERATOR_SHORT \
+    LEGAL_OGRNIP=$LEGAL_OGRNIP \
+    LEGAL_INN=$LEGAL_INN \
+    LEGAL_ADDRESS=$LEGAL_ADDRESS \
+    LEGAL_BANK_ACCOUNT=$LEGAL_BANK_ACCOUNT \
+    LEGAL_BANK_NAME=$LEGAL_BANK_NAME \
+    LEGAL_BIK=$LEGAL_BIK \
+    LEGAL_PHONE=$LEGAL_PHONE \
+    LEGAL_EMAIL=$LEGAL_EMAIL
+
 # output: standalone — copy static assets next to standalone server
 RUN cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
 

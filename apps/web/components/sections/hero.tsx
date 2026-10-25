@@ -20,6 +20,10 @@ import { products as staticProducts, type Product } from "@/lib/data";
 import type { MappedProduct } from "@/lib/bot-water-map";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/app/actions/order";
+import {
+  ConsentCheckbox,
+  CONSENT_ERROR,
+} from "@/components/legal/consent-checkbox";
 
 const WaterScene = dynamic(
   () => import("@/components/water-scene").then((mod) => mod.WaterScene),
@@ -46,6 +50,8 @@ export function Hero({
     Awaited<ReturnType<typeof createOrder>> | null
   >(null);
   const [submitting, setSubmitting] = React.useState(false);
+  // Отдельное согласие на обработку ПД (ст. 9 152-ФЗ): чекбокс пустой по умолчанию.
+  const [consent, setConsent] = React.useState(false);
   const total = selected.price * quantity;
 
   const minDate = React.useMemo(() => {
@@ -58,6 +64,13 @@ export function Hero({
     e.preventDefault();
     setSubmitting(true);
     setResult(null);
+    if (!consent) {
+      setResult({ success: false, message: CONSENT_ERROR } as Awaited<
+        ReturnType<typeof createOrder>
+      >);
+      setSubmitting(false);
+      return;
+    }
     const formData = new FormData();
     formData.append("name", name);
     formData.append("phone", phone);
@@ -67,6 +80,7 @@ export function Hero({
     formData.append("productId", selected.id);
     formData.append("quantity", String(quantity));
     formData.append("scheduledAt", date);
+    formData.append("consent", consent ? "1" : "0");
     const res = await createOrder(formData);
     setResult(res);
     setSubmitting(false);
@@ -294,6 +308,12 @@ export function Hero({
                     {result.message}
                   </p>
                 )}
+
+                <ConsentCheckbox
+                  checked={consent}
+                  onChange={setConsent}
+                  idPrefix="hero"
+                />
 
                 <div className="flex items-center justify-between rounded-[var(--radius-md)] bg-[rgba(255,255,255,0.04)] p-4">
                   <div className="space-y-1">

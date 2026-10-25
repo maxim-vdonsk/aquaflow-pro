@@ -1,12 +1,41 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { OPERATOR } from "@/lib/legal";
 
 const contacts = [
-  { icon: Phone, label: "Телефон", value: "8 (800) 123-45-67", href: "tel:+78001234567" },
-  { icon: Mail, label: "Email", value: "hello@aquaflow.example", href: "mailto:hello@aquaflow.example" },
-  { icon: MapPin, label: "Адрес", value: "г. Москва, ул. Водная, 1", href: "#" },
-  { icon: Clock, label: "Режим работы", value: "Ежедневно 08:00–22:00", href: "#" },
+  ...(OPERATOR.phone
+    ? [
+        {
+          icon: Phone,
+          label: "Телефон",
+          value: OPERATOR.phone,
+          href: `tel:${OPERATOR.phone.replace(/[^\d+]/g, "")}`,
+        },
+      ]
+    : []),
+  ...(OPERATOR.email
+    ? [
+        {
+          icon: Mail,
+          label: "Email",
+          value: OPERATOR.email,
+          href: `mailto:${OPERATOR.email}`,
+        },
+      ]
+    : []),
+  { icon: MapPin, label: "Адрес", value: OPERATOR.address, href: "#" },
+  {
+    icon: Clock,
+    label: "Режим работы",
+    value: "Ежедневно 08:00–22:00",
+    href: "#",
+  },
 ];
+
+export const metadata = {
+  title: "Контакты",
+  description: "Свяжитесь с нами для заказа доставки воды",
+};
 
 export default function ContactsPage() {
   return (
@@ -21,7 +50,7 @@ export default function ContactsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>AquaFlow</CardTitle>
+            <CardTitle>{OPERATOR.legalName}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2">
             {contacts.map(({ icon: Icon, label, value, href }) => (
@@ -41,6 +70,14 @@ export default function ContactsPage() {
             ))}
           </CardContent>
         </Card>
+
+        <p className="mt-6 text-center text-sm text-[var(--color-muted-foreground)]">
+          Реквизиты продавца — в разделе{" "}
+          <a href="/terms" className="text-[var(--color-primary)] underline hover:opacity-80">
+            «Порядок оформления заказа»
+          </a>
+          .
+        </p>
       </div>
     </div>
   );

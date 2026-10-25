@@ -30,6 +30,20 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        # Статичные страницы (privacy/terms/consent/contacts) и футер пекут
+        # process.env.LEGAL_* в HTML на этапе next build — значения приходят
+        # из .env проекта (в git НЕ попадают, см. .gitignore .env.*).
+        LEGAL_OPERATOR_NAME: ${LEGAL_OPERATOR_NAME:-}
+        LEGAL_OPERATOR_SHORT: ${LEGAL_OPERATOR_SHORT:-}
+        LEGAL_OGRNIP: ${LEGAL_OGRNIP:-}
+        LEGAL_INN: ${LEGAL_INN:-}
+        LEGAL_ADDRESS: ${LEGAL_ADDRESS:-}
+        LEGAL_BANK_ACCOUNT: ${LEGAL_BANK_ACCOUNT:-}
+        LEGAL_BANK_NAME: ${LEGAL_BANK_NAME:-}
+        LEGAL_BIK: ${LEGAL_BIK:-}
+        LEGAL_PHONE: ${LEGAL_PHONE:-}
+        LEGAL_EMAIL: ${LEGAL_EMAIL:-}
     restart: unless-stopped
     ports:
       - "3000:3000"
