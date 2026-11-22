@@ -121,7 +121,7 @@ export function UserMenu({ variant = "desktop" }: { variant?: "desktop" | "mobil
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
             role="menu"
-            className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--color-border)] bg-[rgba(3,5,10,0.97)] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-[20px]"
+            className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--color-border)] bg-[rgba(0,20,53,0.97)] p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-[20px]"
           >
             <div className="border-b border-[var(--color-border)] px-3 py-2">
               <div className="truncate text-sm font-medium">{userName}</div>

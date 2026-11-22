@@ -42,7 +42,7 @@ export function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
         scrolled
-          ? "bg-[rgba(3,5,10,0.7)] backdrop-blur-[20px] saturate-[180%] border-[var(--color-border)]"
+          ? "bg-[rgba(0,20,53,0.7)] backdrop-blur-[20px] saturate-[180%] border-[var(--color-border)]"
           : "bg-transparent border-transparent"
       }`}
     >
@@ -88,7 +88,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-            className="overflow-hidden border-b border-[var(--color-border)] bg-[rgba(3,5,10,0.97)] backdrop-blur-[24px] md:hidden"
+            className="overflow-hidden border-b border-[var(--color-border)] bg-[rgba(0,20,53,0.97)] backdrop-blur-[24px] md:hidden"
           >
             <nav className="flex flex-col gap-2 px-4 py-6">
               {nav.map((item, i) => (
