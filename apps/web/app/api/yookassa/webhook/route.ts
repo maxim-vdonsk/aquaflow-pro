@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   let payload: {
     type?: string;
     event?: string;
-    object?: { id?: string; status?: string };
+    object?: { id?: string; status?: string; payment_id?: string };
   };
   try {
     payload = await request.json();
@@ -76,39 +76,58 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "bad json" }, { status: 400 });
   }
 
-  const paymentId = payload.object?.id;
-  if (payload.type !== "notification" || !paymentId) {
+  const objectId = payload.object?.id;
+  if (payload.type !== "notification" || !objectId) {
     return NextResponse.json({ error: "unsupported" }, { status: 400 });
   }
 
-  let verifiedStatus: string | null = null;
+  // refund.succeeded: object — возврат, payment_id указывает на платёж.
+  if (payload.event === "refund.succeeded") {
+    const refundPaymentId = payload.object?.payment_id;
+    if (refundPaymentId) {
+      await db
+        .update(orders)
+        .set({ paymentStatus: "refunded" })
+        .where(eq(orders.paymentId, refundPaymentId));
+    }
+    return NextResponse.json({ ok: true, event: "refund.succeeded" });
+  }
+
+  let target: "paid" | "failed" | null = null;
   if (process.env.YOOKASSA_MODE === "fake") {
     // В fake-режиме авторитетный источник — уведомление эмулятора (как касса
     // в реальности): перечитывать неоткуда, кроме уведомления.
-    verifiedStatus = payload.object?.status ?? null;
+    const st = payload.object?.status ?? null;
+    target = st === "succeeded" ? "paid" : st === "canceled" ? "failed" : null;
   } else {
     // Уведомление не является подтверждением: статус всегда перепроверяем
-    // запросом GET /v3/payments/{id} (требование ЮKassa).
-    const payment = await getPayment(paymentId);
+    // запросом GET /v3/payments/{id} (требование ЮKassa). Ошибка API (404 и
+    // т.п.) — не сбой обработки: 200 без изменений, чтобы не зациклить ретраи.
+    let payment;
+    try {
+      payment = await getPayment(objectId);
+    } catch (err) {
+      console.error("[yookassa] webhook verify failed:", err);
+      return NextResponse.json({ ok: true, matched: false });
+    }
     if (!payment) {
       return NextResponse.json({ ok: true, matched: false });
     }
-    verifiedStatus = payment.status;
+    target =
+      payment.status === "succeeded"
+        ? "paid"
+        : payment.status === "canceled"
+          ? "failed"
+          : null;
   }
 
-  const target =
-    verifiedStatus === "succeeded"
-      ? "paid"
-      : verifiedStatus === "canceled"
-        ? "failed"
-        : null;
-
   if (target) {
-    // refunded не перезаписываем: возврат делается через refundOrder.
+    // refunded не перезаписываем: webhook ставит только paid/failed;
+    // возврат завершается refundOrder (или refund.succeeded выше).
     await db
       .update(orders)
       .set({ paymentStatus: target })
-      .where(eq(orders.paymentId, paymentId));
+      .where(eq(orders.paymentId, objectId));
   }
   return NextResponse.json({ ok: true });
 }
