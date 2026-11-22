@@ -44,6 +44,8 @@ RUN pnpm --filter @aquaflow/web build
 
 # output: standalone — copy static assets next to standalone server
 RUN cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+# public/ тоже не включается в standalone (лого /brand/*, favicon)
+RUN cp -r apps/web/public apps/web/.next/standalone/apps/web/public
 
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
