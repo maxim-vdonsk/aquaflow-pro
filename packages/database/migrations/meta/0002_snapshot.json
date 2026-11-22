@@ -821,8 +821,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "telegram_id": {
-          "name": "telegram_id",
+        "client_id": {
+          "name": "client_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -860,11 +860,11 @@
             "email"
           ]
         },
-        "user_telegram_id_unique": {
-          "name": "user_telegram_id_unique",
+        "user_client_id_unique": {
+          "name": "user_client_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "telegram_id"
+            "client_id"
           ]
         }
       },

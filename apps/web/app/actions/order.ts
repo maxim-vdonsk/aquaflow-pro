@@ -12,9 +12,9 @@ import {
 import { getCatalogProducts } from "@/lib/catalog";
 import { products as staticProducts } from "@/lib/data";
 
-function phoneToSyntheticTelegramId(phone: string): number {
+function phoneToSyntheticClientId(phone: string): number {
   // Stable negative hash of the phone number. Negative values avoid collisions
-  // with real Telegram user IDs which are always positive.
+  // with real messenger user IDs (MAX bot) which are always positive.
   const digits = phone.replace(/\D/g, "");
   let hash = 0;
   for (let i = 0; i < digits.length; i++) {
@@ -101,10 +101,10 @@ export async function createOrder(formData: FormData) {
   );
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const userTelegramId = session?.user?.telegramId;
-  const telegramId = userTelegramId
-    ? Number(userTelegramId)
-    : phoneToSyntheticTelegramId(phone);
+  const sessionClientId = session?.user?.clientId;
+  const clientId = sessionClientId
+    ? Number(sessionClientId)
+    : phoneToSyntheticClientId(phone);
 
   // 1. Forward to the bot FIRST — the bot validates the delivery zone (Yandex
   //    geocoder), persists the order in its DB, notifies managers and writes
@@ -121,7 +121,7 @@ export async function createOrder(formData: FormData) {
       water_type: it.product.water_type,
     }));
     const botResult = await submitSiteOrderToBot({
-      telegram_id: telegramId,
+      client_id: clientId,
       data_delivery: scheduledAt,
       client_name: name,
       client_address: address,

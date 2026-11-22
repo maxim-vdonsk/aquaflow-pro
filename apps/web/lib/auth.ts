@@ -35,12 +35,12 @@ export const auth = betterAuth({
         returned: true,
         fieldName: "phone",
       },
-      telegramId: {
+      clientId: {
         type: "string",
         required: false,
         input: false,
         returned: true,
-        fieldName: "telegram_id",
+        fieldName: "client_id",
       },
     },
   },
@@ -61,7 +61,7 @@ export const auth = betterAuth({
     requireEmailVerification: false,
   },
   socialProviders: {
-    // Configure Telegram, Google, Yandex OAuth here using env credentials.
+    // Configure OAuth providers (Google/Yandex/etc.) here using env credentials.
   },
 });
 

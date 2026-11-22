@@ -11,7 +11,7 @@ Production-ready water delivery website: landing, catalog, checkout, account das
 - **Frontend:** Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Framer Motion, React Three Fiber, next-themes
 - **Backend:** Next.js Server Actions, Better Auth, Drizzle ORM, PostgreSQL, Redis
 - **Дизайн:** кибер-тёмная тема с неоновыми акцентами (cyan / pink / yellow), glassmorphism, анимированные переходы
-- **Интеграции:** Telegram Login Widget, FastAPI бот доставки воды, email-верификация
+- **Интеграции:** мост к боту доставки воды (мессенджер MAX), ЮKassa (онлайн-оплата), email-верификация
 - **Инфраструктура:** Docker Compose, pnpm workspaces, Turbo
 
 ## Структура проекта / Project Structure
@@ -58,18 +58,15 @@ docker compose up --build
 
 Запускается веб-приложение (порт 3000), MCP-сервер, Postgres и Redis.
 
-## Интеграция с Telegram-ботом / Bot Integration
+## Интеграция с ботом доставки / Bot Integration
 
-Сайт умеет отправлять заказы в API водочного Telegram-бота и синхронизировать каталог воды.
+Сайт умеет отправлять заказы в API водного бота (мессенджер MAX) и синхронизировать каталог воды.
 
 Переменные окружения в `.env`:
 
 ```env
 BOT_API_URL=http://127.0.0.1:8001
 BOT_API_TOKEN=<токен из таблицы api_tokens бота>
-TELEGRAM_BOT_TOKEN=<токен от @BotFather>
-NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=<username бота без @>
-NEXT_PUBLIC_SHOW_TELEGRAM_LOGIN=true
 ```
 
 ## MCP-сервер / MCP Server

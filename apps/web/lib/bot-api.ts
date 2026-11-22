@@ -17,7 +17,7 @@ export interface BotWaterItem {
 }
 
 export interface BotOrderInput {
-  telegram_id: number;
+  client_id: number;
   data_delivery: string;
   client_name: string;
   client_address: string;
@@ -33,7 +33,7 @@ export interface BotOrderResult {
   ok: boolean;
   data?: {
     id: number;
-    telegram_id: number;
+    client_id: number;
     data_delivery: string;
     client_name: string;
     client_address: string;
@@ -56,7 +56,7 @@ export interface SiteOrderItemInput {
 }
 
 export interface SiteOrderBotInput {
-  telegram_id: number;
+  client_id: number;
   data_delivery: string;
   client_name: string;
   client_address: string;
