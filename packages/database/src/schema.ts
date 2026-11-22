@@ -22,6 +22,12 @@ export const subscriptionFrequencyEnum = pgEnum("subscription_frequency", [
   "biweekly",
   "monthly",
 ]);
+// Runtime-флаги (админка): payments_on = "1"|"0" — включена ли онлайн-оплата.
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
 export const productCategoryEnum = pgEnum("product_category", [
   "water",
   "cooler",

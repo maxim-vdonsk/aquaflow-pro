@@ -25,7 +25,13 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 const CATEGORY_ORDER = ["water", "cooler", "pump", "accessory"];
 
-export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
+export function OrderForm({
+  catalog,
+  paymentsOnlineEnabled = true,
+}: {
+  catalog: MappedProduct[];
+  paymentsOnlineEnabled?: boolean;
+}) {
   const {
     register,
     handleSubmit,
@@ -317,7 +323,8 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
                     <span className="font-heading text-2xl font-bold grad-text">{formatPrice(total)}</span>
                   </div>
 
-                  {/* Способ оплаты */}
+                  {/* Способ оплаты (скрыто, если онлайн-оплата выключена в админке) */}
+                  {paymentsOnlineEnabled && (
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -344,6 +351,7 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
                       <span className="text-xs text-[var(--color-muted-foreground)]">карта или СБП</span>
                     </button>
                   </div>
+                  )}
 
                   <ConsentCheckbox
                     checked={consent}

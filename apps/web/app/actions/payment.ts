@@ -17,6 +17,23 @@ import {
 import { getCatalogProducts } from "@/lib/catalog";
 import { products as staticProducts } from "@/lib/data";
 import { centsToRub } from "@/lib/order-view";
+import { isPaymentsEnabled, setPaymentsEnabled } from "@/lib/settings";
+
+export async function togglePaymentsEnabled(): Promise<{ enabled: boolean; message: string }> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  if (role !== "admin" && role !== "operator") {
+    return { enabled: await isPaymentsEnabled(), message: "Нет прав" };
+  }
+  const next = !(await isPaymentsEnabled());
+  await setPaymentsEnabled(next);
+  revalidatePath("/admin");
+  revalidatePath("/order");
+  return {
+    enabled: next,
+    message: next ? "Онлайн-оплата включена" : "Онлайн-оплата отключена — заказы идут с оплатой при получении",
+  };
+}
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -42,6 +59,9 @@ export async function startOnlinePayment(orderId: string): Promise<{
   if (!order) return { success: false, message: "Заказ не найден" };
   if (order.paymentStatus !== "pending") {
     return { success: true, message: "Оплата уже обработана" };
+  }
+  if (!(await isPaymentsEnabled())) {
+    return { success: false, message: "Онлайн-оплата временно отключена — заказ уйдёт с оплатой при получении" };
   }
 
   // Идемпотентно: если платёж уже был создан, переиспользуем его ссылку.

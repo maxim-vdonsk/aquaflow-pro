@@ -16,6 +16,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUsers } from "@/components/admin/admin-users";
 import { RefundButton } from "@/components/admin/refund-button";
+import { PaymentToggle } from "@/components/admin/payment-toggle";
+import { isPaymentsEnabled } from "@/lib/settings";
 import { Users, ShoppingCart, TrendingUp, CalendarClock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +36,7 @@ export default async function AdminPage({
 
   const { tab } = await searchParams;
   const activeTab = tab === "users" ? "users" : "orders";
+  const paymentsOnlineEnabled = await isPaymentsEnabled();
 
   const accountUsers =
     activeTab === "users"
@@ -181,6 +184,8 @@ export default async function AdminPage({
               </Card>
             ))}
           </div>
+
+          <PaymentToggle initialEnabled={paymentsOnlineEnabled} />
 
           <Card className="mt-8">
             <CardHeader>
