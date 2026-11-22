@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[var(--color-foreground)] text-[var(--color-background)] hover:bg-[var(--color-primary)] hover:text-[var(--color-background)] hover:shadow-[0_0_0_1px_rgba(125,249,255,0.4),0_12px_48px_rgba(125,249,255,0.35)]",
+          "bg-[var(--color-foreground)] text-[var(--color-background)] hover:bg-[var(--color-primary)] hover:text-[var(--color-background)] hover:shadow-[0_0_0_1px_rgba(77,154,255,0.4),0_12px_48px_rgba(77,154,255,0.35)]",
         secondary:
           "bg-[var(--color-secondary)] text-[var(--color-secondary-foreground)] hover:opacity-90 hover:shadow-[0_0_24px_rgba(6,182,212,0.35)]",
         accent:
-          "bg-[var(--color-accent)] text-[var(--color-accent-foreground)] hover:opacity-90 hover:shadow-[0_0_24px_rgba(176,107,255,0.35)]",
+          "bg-[var(--color-accent)] text-[var(--color-accent-foreground)] hover:opacity-90 hover:shadow-[0_0_24px_rgba(0,104,208,0.35)]",
         outline:
           "border border-[var(--color-border-hi)] bg-transparent text-[var(--color-foreground)] hover:bg-[rgba(255,255,255,0.07)] hover:border-[var(--color-primary)]",
         ghost: "hover:bg-[rgba(255,255,255,0.07)] text-[var(--color-foreground)]",

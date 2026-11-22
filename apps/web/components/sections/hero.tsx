@@ -99,7 +99,7 @@ export function Hero({
         >
           <div className="hero-badge mb-6 w-fit">
             <span className="pulse-dot" />
-            Доставка за 2 часа по городу
+            Доставка за 2 часа по Краснодару
           </div>
 
           <motion.h1
@@ -127,7 +127,7 @@ export function Hero({
                 visible: { y: 0, opacity: 1, transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] } },
               }}
             >
-              у вас домой
+              для чайных, кафе
             </motion.span>
             <motion.span
               className="line-reveal"
@@ -136,13 +136,13 @@ export function Hero({
                 visible: { y: 0, opacity: 1, transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] } },
               }}
             >
-              <span className="grad-text">за 2 часа</span>
+              <span className="grad-text">и ресторанов</span>
             </motion.span>
           </motion.h1>
 
           <p className="mt-6 max-w-lg text-lg text-[var(--color-muted-foreground)]">
-            AquaFlow привозит сертифицированную питьевую воду в бутылях 19 л, кулеры и аксессуары.
-            Настройте подписку и забудьте о перебоях.
+            ОбуховЪ привозит сертифицированную питьевую воду в бутылях 19 л и оборудование для чайных, кафе,
+            ресторанов и офисов. Настройте регулярные поставки и забудьте о перебоях.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -156,7 +156,7 @@ export function Hero({
             </span>
             <span className="hero-badge">
               <span className="text-[var(--color-yellow)]">●</span>
-              Подписка
+              Поставки по расписанию
             </span>
           </div>
 
@@ -183,7 +183,7 @@ export function Hero({
           transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
           id="calculator"
         >
-          <Card className="border-[var(--color-border)] bg-[rgba(6,9,18,0.6)] text-[var(--color-card-foreground)] shadow-2xl backdrop-blur-xl">
+          <Card className="border-[var(--color-border)] bg-[rgba(0,20,53,0.6)] text-[var(--color-card-foreground)] shadow-2xl backdrop-blur-xl">
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-5 p-6 sm:p-8">
                 <h2 className="font-heading text-2xl font-semibold">Быстрый заказ</h2>
@@ -200,7 +200,7 @@ export function Hero({
                           onClick={() => setSelected(p)}
                           className={`rounded-[var(--radius-md)] border px-3 py-2 text-left text-sm transition-colors ${
                             selected.id === p.id
-                              ? "border-[var(--color-primary)] bg-[rgba(125,249,255,0.12)] text-[var(--color-primary)] shadow-[0_0_20px_rgba(125,249,255,0.15)]"
+                              ? "border-[var(--color-primary)] bg-[rgba(77,154,255,0.12)] text-[var(--color-primary)] shadow-[0_0_20px_rgba(77,154,255,0.15)]"
                               : "border-[var(--color-border)] bg-[rgba(255,255,255,0.03)] text-[var(--color-foreground)] hover:bg-[rgba(255,255,255,0.07)]"
                           }`}
                         >

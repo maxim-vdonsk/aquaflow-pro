@@ -11,8 +11,8 @@ export function Cta() {
     <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-hi)] bg-gradient-to-br from-[rgba(125,249,255,0.08)] to-[rgba(176,107,255,0.08)] px-6 py-16 text-center sm:px-12">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(125,249,255,0.15),transparent_60%)]" />
+          <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-hi)] bg-gradient-to-br from-[rgba(77,154,255,0.08)] to-[rgba(0,104,208,0.08)] px-6 py-16 text-center sm:px-12">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(77,154,255,0.15),transparent_60%)]" />
             <div className="relative z-10">
               <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-5xl">
                 Готовы пить чистую воду{" "}

@@ -36,7 +36,7 @@ export function Testimonials() {
                           key={i}
                           className={`h-4 w-4 ${
                             i < t.rating
-                              ? "fill-[var(--color-primary)] text-[var(--color-primary)] drop-shadow-[0_0_6px_rgba(125,249,255,0.5)]"
+                              ? "fill-[var(--color-primary)] text-[var(--color-primary)] drop-shadow-[0_0_6px_rgba(77,154,255,0.5)]"
                               : "text-[var(--color-border)]"
                           }`}
                         />

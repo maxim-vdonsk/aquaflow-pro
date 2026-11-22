@@ -40,7 +40,7 @@ export function CartButton({ variant = "full", className }: CartButtonProps) {
         </span>
       )}
       {shownCount > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-xs font-bold text-[var(--color-background)] shadow-[0_0_12px_rgba(125,249,255,0.5)]">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-xs font-bold text-[var(--color-background)] shadow-[0_0_12px_rgba(77,154,255,0.5)]">
           {shownCount}
         </span>
       )}

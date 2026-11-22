@@ -45,7 +45,7 @@ export function PageLoader() {
           />
         </div>
         <div className="mt-4 font-mono text-xs uppercase tracking-[4px] text-[var(--color-muted-foreground)]">
-          AquaFlow // Pro
+          ОбуховЪ // вода
         </div>
       </div>
     </div>

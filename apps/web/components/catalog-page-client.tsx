@@ -32,20 +32,20 @@ const categoryColors: Record<Category, { active: string; inactive: string }> = {
   },
   water: {
     active:
-      "bg-[var(--color-primary)] text-[var(--color-background)] shadow-[0_0_20px_rgba(125,249,255,0.35)]",
+      "bg-[var(--color-primary)] text-[var(--color-background)] shadow-[0_0_20px_rgba(77,154,255,0.35)]",
     inactive:
-      "bg-[rgba(125,249,255,0.08)] text-[var(--color-primary)] border border-[rgba(125,249,255,0.25)] hover:bg-[rgba(125,249,255,0.12)]",
+      "bg-[rgba(77,154,255,0.08)] text-[var(--color-primary)] border border-[rgba(77,154,255,0.25)] hover:bg-[rgba(77,154,255,0.12)]",
   },
   cooler: {
-    active: "bg-[var(--color-accent)] text-white shadow-[0_0_20px_rgba(176,107,255,0.35)]",
+    active: "bg-[var(--color-accent)] text-white shadow-[0_0_20px_rgba(0,104,208,0.35)]",
     inactive:
-      "bg-[rgba(176,107,255,0.08)] text-[var(--color-accent)] border border-[rgba(176,107,255,0.25)] hover:bg-[rgba(176,107,255,0.12)]",
+      "bg-[rgba(0,104,208,0.08)] text-[var(--color-accent)] border border-[rgba(0,104,208,0.25)] hover:bg-[rgba(0,104,208,0.12)]",
   },
   pump: {
     active:
-      "bg-[var(--color-yellow)] text-[var(--color-background)] shadow-[0_0_20px_rgba(255,225,86,0.35)]",
+      "bg-[var(--color-yellow)] text-[var(--color-background)] shadow-[0_0_20px_rgba(77,154,255,0.35)]",
     inactive:
-      "bg-[rgba(255,225,86,0.08)] text-[var(--color-yellow)] border border-[rgba(255,225,86,0.25)] hover:bg-[rgba(255,225,86,0.12)]",
+      "bg-[rgba(77,154,255,0.08)] text-[var(--color-yellow)] border border-[rgba(77,154,255,0.25)] hover:bg-[rgba(77,154,255,0.12)]",
   },
   accessory: {
     active: "bg-[var(--color-rose)] text-white shadow-[0_0_20px_rgba(255,62,136,0.35)]",
@@ -88,7 +88,7 @@ export function CatalogPageClient({
 
   return (
     <div className="relative py-20">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(125,249,255,0.05),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(77,154,255,0.05),transparent_60%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
@@ -165,7 +165,7 @@ export function CatalogPageClient({
         {shownCount > 0 && (
           <button
             onClick={open}
-            className="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-[var(--color-background)] shadow-[0_8px_32px_rgba(125,249,255,0.35)] transition-transform hover:scale-105"
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-[var(--color-background)] shadow-[0_8px_32px_rgba(77,154,255,0.35)] transition-transform hover:scale-105"
           >
             <Badge variant="default" className="bg-[var(--color-background)] px-2 py-1 text-[var(--color-primary)]">
               {shownCount} шт

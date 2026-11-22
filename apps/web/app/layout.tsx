@@ -24,24 +24,24 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AquaFlow — доставка чистой воды",
-    template: "%s | AquaFlow",
+    default: "ОбуховЪ — сервис доставки воды для кафе, ресторанов и офисов",
+    template: "%s | ОбуховЪ",
   },
   description:
-    "Чистая питьевая вода у вас домой или в офис за 2 часа. Бутыли 19 л, кулеры, помпы и подписки.",
-  keywords: ["доставка воды", "вода 19 литров", "кулер", "питьевая вода", "AquaFlow"],
+    "Питьевая вода в бутылях 19 л для чайных, кафе, ресторанов и офисов в Краснодаре. Кулеры, помпы, поставки по расписанию.",
+  keywords: ["доставка воды", "вода для кафе", "вода для ресторана", "вода 19 литров", "доставка воды Краснодар", "ОбуховЪ"],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   openGraph: {
     type: "website",
     locale: "ru_RU",
-    siteName: "AquaFlow",
+    siteName: "ОбуховЪ",
   },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#03050a" },
-    { media: "(prefers-color-scheme: dark)", color: "#03050a" },
+    { media: "(prefers-color-scheme: light)", color: "#001435" },
+    { media: "(prefers-color-scheme: dark)", color: "#001435" },
   ],
 };
 

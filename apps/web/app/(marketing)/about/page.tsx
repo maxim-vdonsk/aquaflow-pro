@@ -30,9 +30,9 @@ const values = [
 ];
 
 const colorStyles: Record<string, string> = {
-  cyan: "bg-gradient-to-br from-[rgba(125,249,255,0.22)] to-[rgba(125,249,255,0.05)] border-[rgba(125,249,255,0.3)] text-[var(--color-primary)]",
-  pink: "bg-gradient-to-br from-[rgba(176,107,255,0.22)] to-[rgba(176,107,255,0.05)] border-[rgba(176,107,255,0.3)] text-[var(--color-accent)]",
-  yellow: "bg-gradient-to-br from-[rgba(255,225,86,0.22)] to-[rgba(255,225,86,0.05)] border-[rgba(255,225,86,0.3)] text-[var(--color-yellow)]",
+  cyan: "bg-gradient-to-br from-[rgba(77,154,255,0.22)] to-[rgba(77,154,255,0.05)] border-[rgba(77,154,255,0.3)] text-[var(--color-primary)]",
+  pink: "bg-gradient-to-br from-[rgba(0,104,208,0.22)] to-[rgba(0,104,208,0.05)] border-[rgba(0,104,208,0.3)] text-[var(--color-accent)]",
+  yellow: "bg-gradient-to-br from-[rgba(77,154,255,0.22)] to-[rgba(77,154,255,0.05)] border-[rgba(77,154,255,0.3)] text-[var(--color-yellow)]",
 };
 
 export default function AboutPage() {
@@ -42,13 +42,13 @@ export default function AboutPage() {
         <div className="mb-12 text-center">
           <Reveal>
             <h1 className="font-heading text-3xl font-bold sm:text-5xl">
-              О <span className="grad-text">AquaFlow</span>
+              Об <span className="grad-text">ОбуховЪ</span>
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-4 text-lg text-[var(--color-muted-foreground)]">
-              Мы верим, что качественная питьевая вода должна быть доступной каждому. Поэтому создали сервис,
-              который берёт всю рутину доставки на себя: от заказа до напоминания о следующей бутыли.
+              ОбуховЪ — сервис доставки воды для чайных, кафе и ресторанов. Берём на себя всю рутину:
+              заявка в пару кликов, доставка по расписанию и замена тары.
             </p>
           </Reveal>
         </div>

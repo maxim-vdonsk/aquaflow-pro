@@ -12,8 +12,8 @@ function CyberParticles() {
   const target = useRef({ x: 0, y: 0 });
 
   const count = 1200;
-  const c1 = useMemo(() => new THREE.Color(0x7df9ff), []);
-  const c2 = useMemo(() => new THREE.Color(0xb06bff), []);
+  const c1 = useMemo(() => new THREE.Color(0x4d9aff), []);
+  const c2 = useMemo(() => new THREE.Color(0x0068d0), []);
   const c3 = useMemo(() => new THREE.Color(0xff3e88), []);
 
   const { positions, colors } = useMemo(() => {
@@ -121,7 +121,7 @@ export function WaterScene() {
   const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio, 2) : 1;
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(125,249,255,0.10),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(77,154,255,0.10),transparent_60%)]" />
       <Canvas
         dpr={dpr}
         camera={{ position: [0, 0, 5], fov: 75 }}

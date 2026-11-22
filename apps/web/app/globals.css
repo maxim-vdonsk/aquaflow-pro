@@ -4,33 +4,33 @@
 
 @theme {
   /* Cyber AquaFlow design tokens — dark first */
-  --color-background: #03050a;
-  --color-background-2: #060912;
+  --color-background: #001435;
+  --color-background-2: #000f26;
   --color-foreground: #e6eaf2;
   --color-card: rgba(255, 255, 255, 0.04);
   --color-card-foreground: #e6eaf2;
-  --color-popover: #060912;
+  --color-popover: #000f26;
   --color-popover-foreground: #e6eaf2;
-  --color-primary: #7df9ff;
-  --color-primary-foreground: #000000;
-  --color-secondary: #06b6d4;
-  --color-secondary-foreground: #000000;
-  --color-accent: #b06bff;
+  --color-primary: #4d9aff;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #4d9aff;
+  --color-secondary-foreground: #ffffff;
+  --color-accent: #0068d0;
   --color-accent-foreground: #ffffff;
   --color-muted: rgba(255, 255, 255, 0.04);
   --color-muted-foreground: #8b93a7;
   --color-border: rgba(255, 255, 255, 0.09);
   --color-border-hi: rgba(255, 255, 255, 0.18);
   --color-input: rgba(255, 255, 255, 0.07);
-  --color-ring: #7df9ff;
+  --color-ring: #4d9aff;
   --color-destructive: #ff3e88;
   --color-destructive-foreground: #ffffff;
 
   /* Reference accent palette */
-  --color-cyan: #7df9ff;
-  --color-pink: #b06bff;
+  --color-cyan: #4d9aff;
+  --color-pink: #0068d0;
   --color-rose: #ff3e88;
-  --color-yellow: #ffe156;
+  --color-yellow: #4d9aff;
   --color-green: #4ade80;
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
@@ -43,25 +43,25 @@
 }
 
 .dark {
-  --color-background: #03050a;
-  --color-background-2: #060912;
+  --color-background: #001435;
+  --color-background-2: #000f26;
   --color-foreground: #e6eaf2;
   --color-card: rgba(255, 255, 255, 0.04);
   --color-card-foreground: #e6eaf2;
-  --color-popover: #060912;
+  --color-popover: #000f26;
   --color-popover-foreground: #e6eaf2;
-  --color-primary: #7df9ff;
-  --color-primary-foreground: #000000;
-  --color-secondary: #06b6d4;
-  --color-secondary-foreground: #000000;
-  --color-accent: #b06bff;
+  --color-primary: #0068d0;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #4d9aff;
+  --color-secondary-foreground: #ffffff;
+  --color-accent: #0068d0;
   --color-accent-foreground: #ffffff;
   --color-muted: rgba(255, 255, 255, 0.04);
   --color-muted-foreground: #8b93a7;
   --color-border: rgba(255, 255, 255, 0.09);
   --color-border-hi: rgba(255, 255, 255, 0.18);
   --color-input: rgba(255, 255, 255, 0.07);
-  --color-ring: #7df9ff;
+  --color-ring: #4d9aff;
   --color-destructive: #ff3e88;
   --color-destructive-foreground: #ffffff;
 }
@@ -72,7 +72,7 @@
 
 ::selection {
   background: var(--color-primary);
-  color: #000;
+  color: #fff;
 }
 
 html {
@@ -124,7 +124,7 @@ h1, h2, h3, h4, h5, h6 {
 .cursor-ring {
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(125, 249, 255, 0.4);
+  border: 1px solid rgba(77, 154, 255, 0.4);
   border-radius: 50%;
   transition: width 0.25s ease, height 0.25s ease, border-color 0.25s, background 0.25s;
 }
@@ -138,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 64px;
   height: 64px;
   border-color: var(--color-primary);
-  background: rgba(125, 249, 255, 0.08);
+  background: rgba(77, 154, 255, 0.08);
 }
 
 @media (max-width: 900px) {
@@ -150,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── GRADIENT TEXT ── */
 .grad-text {
-  background: linear-gradient(120deg, #fff 0%, #7df9ff 40%, #b06bff 80%);
+  background: linear-gradient(120deg, #fff 0%, #4d9aff 40%, #0068d0 80%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -287,7 +287,7 @@ h1, h2, h3, h4, h5, h6 {
   right: 100%;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(135deg, #7df9ff 0%, #b06bff 100%);
+  background: linear-gradient(135deg, #4d9aff 0%, #0068d0 100%);
   transition: right 0.3s cubic-bezier(0.7, 0, 0.3, 1);
 }
 

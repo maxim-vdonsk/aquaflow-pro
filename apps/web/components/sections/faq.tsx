@@ -12,7 +12,7 @@ import { faq } from "@/lib/data";
 export function Faq() {
   return (
     <section id="faq" className="relative py-24">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(176,107,255,0.05),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,104,208,0.05),transparent_60%)]" />
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center">
           <Reveal>

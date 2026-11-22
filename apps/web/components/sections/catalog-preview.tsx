@@ -27,7 +27,7 @@ export function CatalogPreview({
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(125,249,255,0.03),transparent)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(77,154,255,0.03),transparent)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">

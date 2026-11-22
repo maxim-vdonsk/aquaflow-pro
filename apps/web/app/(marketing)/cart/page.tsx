@@ -22,7 +22,7 @@ export default function CartPage() {
 
   return (
     <div className="relative py-20">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(125,249,255,0.05),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(77,154,255,0.05),transparent_60%)]" />
 
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <Reveal>

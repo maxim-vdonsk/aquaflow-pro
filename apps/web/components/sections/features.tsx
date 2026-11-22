@@ -44,9 +44,9 @@ const items = [
 ];
 
 const colorStyles: Record<string, string> = {
-  cyan: "bg-gradient-to-br from-[rgba(125,249,255,0.22)] to-[rgba(125,249,255,0.05)] border-[rgba(125,249,255,0.3)] text-[var(--color-primary)]",
-  pink: "bg-gradient-to-br from-[rgba(176,107,255,0.22)] to-[rgba(176,107,255,0.05)] border-[rgba(176,107,255,0.3)] text-[var(--color-accent)]",
-  yellow: "bg-gradient-to-br from-[rgba(255,225,86,0.22)] to-[rgba(255,225,86,0.05)] border-[rgba(255,225,86,0.3)] text-[var(--color-yellow)]",
+  cyan: "bg-gradient-to-br from-[rgba(77,154,255,0.22)] to-[rgba(77,154,255,0.05)] border-[rgba(77,154,255,0.3)] text-[var(--color-primary)]",
+  pink: "bg-gradient-to-br from-[rgba(0,104,208,0.22)] to-[rgba(0,104,208,0.05)] border-[rgba(0,104,208,0.3)] text-[var(--color-accent)]",
+  yellow: "bg-gradient-to-br from-[rgba(77,154,255,0.22)] to-[rgba(77,154,255,0.05)] border-[rgba(77,154,255,0.3)] text-[var(--color-yellow)]",
 };
 
 export function Features() {
@@ -56,7 +56,7 @@ export function Features() {
         <div className="mb-14 text-center">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[3px] text-[var(--color-primary)]">
-              /01 — Почему AquaFlow
+              /01 — Почему ОбуховЪ
             </span>
           </Reveal>
           <Reveal delay={0.1}>

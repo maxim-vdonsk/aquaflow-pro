@@ -14,9 +14,9 @@ const badgeVariants = cva(
         accent:
           "border-transparent bg-[var(--color-accent)] text-[var(--color-accent-foreground)]",
         outline: "text-[var(--color-foreground)] border-[var(--color-border-hi)] bg-[rgba(255,255,255,0.04)]",
-        cyan: "border-transparent bg-[rgba(125,249,255,0.15)] text-[var(--color-cyan)] border border-[rgba(125,249,255,0.3)]",
-        pink: "border-transparent bg-[rgba(176,107,255,0.15)] text-[var(--color-pink)] border border-[rgba(176,107,255,0.3)]",
-        yellow: "border-transparent bg-[rgba(255,225,86,0.15)] text-[var(--color-yellow)] border border-[rgba(255,225,86,0.3)]",
+        cyan: "border-transparent bg-[rgba(77,154,255,0.15)] text-[var(--color-cyan)] border border-[rgba(77,154,255,0.3)]",
+        pink: "border-transparent bg-[rgba(0,104,208,0.15)] text-[var(--color-pink)] border border-[rgba(0,104,208,0.3)]",
+        yellow: "border-transparent bg-[rgba(77,154,255,0.15)] text-[var(--color-yellow)] border border-[rgba(77,154,255,0.3)]",
       },
     },
     defaultVariants: {

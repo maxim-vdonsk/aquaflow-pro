@@ -37,7 +37,7 @@ export const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(
         ref={innerRef}
         className={cn(
           "group relative transform-gpu transition-transform duration-300 ease-out",
-          glare && "before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(800px_circle_at_var(--mx,50%)_var(--my,50%),rgba(125,249,255,0.07),transparent_40%)] before:opacity-0 before:transition-opacity before:duration-300 group-hover:before:opacity-100",
+          glare && "before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(800px_circle_at_var(--mx,50%)_var(--my,50%),rgba(77,154,255,0.07),transparent_40%)] before:opacity-0 before:transition-opacity before:duration-300 group-hover:before:opacity-100",
           className
         )}
         onMouseMove={onMouseMove}
