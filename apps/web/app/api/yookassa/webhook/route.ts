@@ -9,6 +9,34 @@ import { NextResponse } from "next/server";
 import { db, orders } from "@aquaflow/database";
 import { eq } from "drizzle-orm";
 import { getPayment } from "@/lib/yookassa";
+import { BOT_API_URL, botApiHeaders } from "@/lib/bot-config";
+
+// Переслать статус в мост MAX-бота (best-effort, 5 с лимит).
+async function notifyBot(
+  client_id: string,
+  order_ref: string,
+  status: string,
+  paymentId: string
+): Promise<void> {
+  if (!BOT_API_URL) return;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    await fetch(`${BOT_API_URL}/api/payment-status`, {
+      method: "POST",
+      headers: botApiHeaders(),
+      body: JSON.stringify({
+        client_id: Number(client_id),
+        order_ref: Number(order_ref) || 0,
+        status,
+        payment_id: paymentId,
+      }),
+      signal: ctrl.signal,
+    }).finally(() => clearTimeout(t));
+  } catch (err) {
+    console.error("[yookassa] bot notify failed:", err);
+  }
+}
 
 // Официальные IP-адреса уведомлений ЮKassa (документация, developers/using-api/webhooks).
 const ALLOWED_V4_CIDR = [
@@ -94,6 +122,7 @@ export async function POST(request: Request) {
   }
 
   let target: "paid" | "failed" | null = null;
+  let botMeta: { client_id: string; order_ref: string } | null = null;
   if (process.env.YOOKASSA_MODE === "fake") {
     // В fake-режиме авторитетный источник — уведомление эмулятора (как касса
     // в реальности): перечитывать неоткуда, кроме уведомления.
@@ -113,6 +142,13 @@ export async function POST(request: Request) {
     if (!payment) {
       return NextResponse.json({ ok: true, matched: false });
     }
+    const meta = (payment.metadata ?? {}) as Record<string, string | number>;
+    if (meta.source === "max_bot") {
+      botMeta = {
+        client_id: String(meta.client_id ?? ""),
+        order_ref: String(meta.order_ref ?? ""),
+      };
+    }
     target =
       payment.status === "succeeded"
         ? "paid"
@@ -128,6 +164,10 @@ export async function POST(request: Request) {
       .update(orders)
       .set({ paymentStatus: target })
       .where(eq(orders.paymentId, objectId));
+  }
+  if (target && botMeta && process.env.YOOKASSA_MODE !== "fake") {
+    // Платёж MAX-бота (в orders сайта отсутствует) — уведомляем бот через мост.
+    await notifyBot(botMeta.client_id, botMeta.order_ref, target, objectId);
   }
   return NextResponse.json({ ok: true });
 }

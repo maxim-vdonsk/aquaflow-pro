@@ -39,12 +39,15 @@ export interface CreatePaymentInput {
   returnUrl: string;
   customerContact?: string | null;
   receiptItems?: YkReceiptItem[];
+  // Дополнительные метаданные (напр. source: "max_bot" — для уведомлений боту).
+  extraMetadata?: Record<string, string>;
 }
 
 export interface YkPayment {
   id: string;
   status: "pending" | "waiting_for_capture" | "succeeded" | "canceled" | string;
   confirmationUrl: string | null;
+  metadata?: Record<string, string | number>;
 }
 
 function rubFromCents(cents: number): string {
@@ -96,11 +99,13 @@ function mapYkPayment(p: unknown): YkPayment {
     id: string;
     status: YkPayment["status"];
     confirmation?: { confirmation_url?: string };
+    metadata?: Record<string, string | number>;
   };
   return {
     id: obj.id,
     status: obj.status,
     confirmationUrl: obj.confirmation?.confirmation_url ?? null,
+    metadata: obj.metadata,
   };
 }
 
@@ -119,7 +124,7 @@ export async function createPayment(input: CreatePaymentInput): Promise<YkPaymen
     capture: true,
     confirmation: { type: "redirect", return_url: input.returnUrl },
     description: input.description.slice(0, 128),
-    metadata: { order_id: input.orderUuid },
+    metadata: { order_id: input.orderUuid, ...(input.extraMetadata ?? {}) },
     receipt: buildReceipt(input),
   };
   const created = mapYkPayment(await ykApiRequest("POST", "/payments", body, `order-${input.orderUuid}`));
