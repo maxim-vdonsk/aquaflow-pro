@@ -12,7 +12,12 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: async (request: any) => {
     const origin = request?.headers?.get?.("origin") || "";
-    return /\.lhr\.life$/.test(origin) ? [origin] : [];
+    const extra = (process.env.AUTH_EXTRA_ORIGINS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const ok = /\.lhr\.life$/.test(origin) || extra.includes(origin);
+    return ok ? [origin] : [];
   },
   user: {
     additionalFields: {
