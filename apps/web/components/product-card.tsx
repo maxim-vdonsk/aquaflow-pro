@@ -34,7 +34,7 @@ export function ProductCard({ product, onAdd, added, qty }: ProductCardProps) {
   return (
     <TiltCard className="h-full rounded-[var(--radius-lg)]">
       <Card className="flex h-full flex-col overflow-hidden border-[var(--color-border)] bg-[var(--color-card)]">
-        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[rgba(77,154,255,0.12)] via-[rgba(6,182,212,0.08)] to-[rgba(0,104,208,0.12)]">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[rgba(77,154,255,0.12)] via-[rgba(77,154,255,0.08)] to-[rgba(0,104,208,0.12)]">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[rgba(0,20,53,0.6)] border border-[var(--color-border)] shadow-[0_0_30px_rgba(77,154,255,0.15)] backdrop-blur-sm">
               <span className="text-center text-xs font-semibold grad-text">
