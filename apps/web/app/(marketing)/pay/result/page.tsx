@@ -16,7 +16,9 @@ export default async function PayResultPage({
   searchParams: Promise<{ order_id?: string }>;
 }) {
   const { order_id } = await searchParams;
-  const [order] = order_id
+  const validUuid =
+    order_id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(order_id);
+  const [order] = validUuid
     ? await db
         .select({ total: orders.total, paymentStatus: orders.paymentStatus })
         .from(orders)
