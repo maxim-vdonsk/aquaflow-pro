@@ -74,6 +74,9 @@ export const orders = pgTable("orders", {
   addressId: uuid("address_id").references(() => addresses.id, { onDelete: "set null" }),
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
   paymentStatus: paymentStatusEnum("payment_status").default("pending").notNull(),
+  // External payment id (YooKassa uuid; fake mode uses "fake_<uuid>"). Null =
+  // оплата при получении / платёж ещё не создавался.
+  paymentId: text("payment_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

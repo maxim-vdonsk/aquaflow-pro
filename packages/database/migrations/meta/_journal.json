@@ -15,6 +15,13 @@
       "when": 1782452737025,
       "tag": "0001_soft_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795338588420,
+      "tag": "0002_uneven_reaper",
+      "breakpoints": true
     }
   ]
 }

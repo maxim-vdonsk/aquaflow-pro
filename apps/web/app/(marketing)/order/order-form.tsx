@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orderSchema, type OrderInput } from "@/lib/schema";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/app/actions/order";
+import { startOnlinePayment } from "@/app/actions/payment";
 import type { MappedProduct } from "@/lib/bot-water-map";
 import { useCartStore } from "@/lib/cart-store";
 import { ConsentCheckbox, CONSENT_ERROR } from "@/components/legal/consent-checkbox";
@@ -43,6 +44,8 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
   });
 
   const [qty, setQty] = React.useState<Record<string, number>>({});
+  // Способ оплаты: при получении (как раньше) или онлайн сейчас (ЮKassa).
+  const [payOnline, setPayOnline] = React.useState(false);
   // Отдельное согласие на обработку ПД (ст. 9 152-ФЗ): чекбокс пустой по умолчанию.
   const [consent, setConsent] = React.useState(false);
   const [result, setResult] = React.useState<
@@ -133,6 +136,23 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
     if (res?.success) {
       setQty({});
       cartClear();
+      // Онлайн-оплата: после создания заказа открываем кассу ЮKassa (или
+      // эмулятор в fake-режиме). Демо-заказ не оплачивается.
+      if (payOnline && res.orderId && !res.demo) {
+        const pay = await startOnlinePayment(res.orderId);
+        if (pay.success && pay.confirmationUrl) {
+          window.location.href = pay.confirmationUrl;
+          return;
+        }
+        if (!pay.success) {
+          setResult({
+            success: true,
+            orderId: res.orderId,
+            demo: false,
+            message: `${res.message} Не удалось открыть онлайн-оплату — оплатите при получении или свяжитесь с нами.`,
+          } as Awaited<ReturnType<typeof createOrder>>);
+        }
+      }
     }
   };
 
@@ -295,6 +315,34 @@ export function OrderForm({ catalog }: { catalog: MappedProduct[] }) {
                   <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-4">
                     <span className="text-sm text-[var(--color-muted-foreground)]">Итого</span>
                     <span className="font-heading text-2xl font-bold grad-text">{formatPrice(total)}</span>
+                  </div>
+
+                  {/* Способ оплаты */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPayOnline(false)}
+                      className={`rounded-[var(--radius-md)] border p-3 text-left text-sm transition-colors ${
+                        !payOnline
+                          ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                          : "border-[var(--color-border)] hover:border-[var(--color-muted-foreground)]"
+                      }`}
+                    >
+                      <span className="block font-medium">При получении</span>
+                      <span className="text-xs text-[var(--color-muted-foreground)]">наличные или перевод</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPayOnline(true)}
+                      className={`rounded-[var(--radius-md)] border p-3 text-left text-sm transition-colors ${
+                        payOnline
+                          ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                          : "border-[var(--color-border)] hover:border-[var(--color-muted-foreground)]"
+                      }`}
+                    >
+                      <span className="block font-medium">Онлайн сейчас</span>
+                      <span className="text-xs text-[var(--color-muted-foreground)]">карта или СБП</span>
+                    </button>
                   </div>
 
                   <ConsentCheckbox

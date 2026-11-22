@@ -15,6 +15,7 @@ import {
 } from "@/lib/order-view";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUsers } from "@/components/admin/admin-users";
+import { RefundButton } from "@/components/admin/refund-button";
 import { Users, ShoppingCart, TrendingUp, CalendarClock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +59,7 @@ export default async function AdminPage({
             createdAt: orders.createdAt,
             status: orders.status,
             paymentStatus: orders.paymentStatus,
+            paymentId: orders.paymentId,
             total: orders.total,
             scheduledAt: orders.scheduledAt,
             customerName: user.name,
@@ -218,6 +220,11 @@ export default async function AdminPage({
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-[var(--color-muted-foreground)]">
                             {PAYMENT_LABELS[order.paymentStatus] ?? order.paymentStatus}
+                            {order.paymentStatus === "paid" && order.paymentId && (
+                              <div className="mt-1">
+                                <RefundButton orderId={order.id} />
+                              </div>
+                            )}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 font-medium">
                             <span
