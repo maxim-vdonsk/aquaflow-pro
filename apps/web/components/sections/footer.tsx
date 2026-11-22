@@ -26,18 +26,11 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2.5 text-xl font-bold text-[var(--color-foreground)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-black">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" />
-                  <path d="M12 6C10 10 8 12 8 14C8 16.2091 9.79086 18 12 18C14.2091 18 16 16.2091 16 14C16 12 14 10 12 6Z" fill="currentColor" />
-                </svg>
-              </span>
-              <span className="font-heading tracking-tight">
-                Aqua<span className="grad-text">Flow</span>
-              </span>
+              <img src="/brand/logo-sign-white.png" alt="ОбуховЪ — сервис доставки воды" className="h-8 w-auto" />
+              <span className="font-heading tracking-tight">ОбуховЪ</span>
             </Link>
             <p className="text-sm text-[var(--color-muted-foreground)]">
-              Доставка питьевой воды и оборудования. Чисто, быстро, удобно.
+              Сервис доставки воды для чайных, кафе и ресторанов.
             </p>
           </div>
 
